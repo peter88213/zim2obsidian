@@ -10,9 +10,9 @@ Rename Markdown files exported by Zim for use with e.g. Obsidian.
 
 - A Python installation (version 3.6 or newer).
 
-## Download link
+## Download
 
-[markdown2md.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/markdown2md.py)
+Save the file [markdown2md.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/markdown2md.py).
 
 ## Usage
 
