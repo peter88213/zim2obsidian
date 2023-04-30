@@ -10,6 +10,10 @@ Rename Markdown files exported by Zim for use with e.g. Obsidian.
 
 - A Python installation (version 3.6 or newer).
 
+## Download link
+
+[markdown2md.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/markdown2md.py)
+
 ## Usage
 
 1. Have *Zim* export the notebook to Markdown (export each page to a separate file). 
