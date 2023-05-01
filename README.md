@@ -1,6 +1,6 @@
 # markdown2md
 
-Rename Markdown files exported by Zim for use with e.g. Obsidian.
+Rename Markdown files exported by Zim v0.69 for use with e.g. Obsidian.
 
 - Loops through all subdirectories of a *Zim* notebook Markdown export.
 - Replaces the ".markdown" extension with ".md". 
