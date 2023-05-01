@@ -33,7 +33,7 @@ Save the file [markdown2md.py](https://raw.githubusercontent.com/peter88213/mark
 
 ### Zim to Obsidian converter
 
-Save the file [markdown2md.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/src/zim2obsidian.py).
+Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/src/zim2obsidian.py).
 
 ## Usage
 
