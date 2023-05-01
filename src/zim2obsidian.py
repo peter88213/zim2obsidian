@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-"""Convert Zim export to Obsidian.
+"""Convert Zim Markdown export to Obsidian.
 
 - Loops through all subdirectories of a Zim notebook Markdown export.
-- Removes each noteFile's first level heading and renames the file accordingly. 
+- Removes each note's first level heading and renames the file accordingly. 
 - Converts internal links to other pages to Obsidian style.
 
 Usage:
@@ -16,7 +16,7 @@ Usage:
 Version 0.1.0
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
-For further information see https://github.com/peter88213/markdown2md
+For further information see https://github.com/peter88213/zim2obsidian
 Published under the MIT License (https://opensource.org/licenses/mit-license.php)
 """
 

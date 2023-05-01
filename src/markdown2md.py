@@ -15,7 +15,7 @@ Usage:
 Version 0.1.0
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
-For further information see https://github.com/peter88213/markdown2md
+For further information see https://github.com/peter88213/zim2obsidian
 Published under the MIT License (https://opensource.org/licenses/mit-license.php)
 """
 
@@ -26,19 +26,19 @@ print(f'*** Convert Zim .markdown export in "{os.getcwd()}" ***\n')
 
 for note in glob.iglob('**/*.markdown', recursive=True):
     print(f'Converting "{note}" ...')
-    
-    # Read a file with ".markdown" extension. 
+
+    # Read a file with ".markdown" extension.
     with open(note, 'r', encoding='utf-8') as f:
         text = f.read()
     filePath, fileExt = os.path.splitext(note)
-    
+
     # Delete the original file.
     os.remove(note)
-    
+
     # Fix local links.
     text = text.replace('.markdown)', '.md)')
-    
+
     # Save the processed file with ".md" extension.
-    with open(f'{filePath}.md', 'w', encoding='utf-8') as f: 
+    with open(f'{filePath}.md', 'w', encoding='utf-8') as f:
         f.write(text)
 print('\nDone.')
