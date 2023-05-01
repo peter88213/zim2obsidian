@@ -7,7 +7,7 @@
 
 Usage:
 
-1. Export a Zim Notebook to Markdown (Export each page to a separate file). 
+1. Have Zim export the Notebook to Markdown (Export each page to a separate file). 
 2. Copy this Python script into the export root directory. 
 3. Start it by double clicking on it or from the console. 
 
