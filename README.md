@@ -16,7 +16,7 @@ Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/mar
 
 ## Usage
 
-1. Export a *Zim* Notebook to Markdown (Export each page to a separate file).
+1. Have *Zim* export the notebook to Markdown (export each page to a separate file). 
 2. Make sure the Markdown files have the ".md" extension. If not, run **markdown2md.py** first.
 3. Copy this Python script **zim2obsidian** into the export root directory. 
 4. Start it by double clicking on it or from the console. 
