@@ -12,7 +12,7 @@ Rename Markdown files exported by Zim v0.69 for use with e.g. Obsidian.
 
 ## Download
 
-Save the file [markdown2md.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/markdown2md.py).
+Save the file [markdown2md.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/src/markdown2md.py).
 
 ## Usage
 
