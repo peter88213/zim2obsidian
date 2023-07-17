@@ -4,6 +4,7 @@
 - Loops through all subdirectories of a Zim notebook Markdown export.
 - Removes each note's first level heading and renames the file accordingly. 
 - Converts internal links to other pages to Obsidian style.
+- Replace Setext-style headers with Atx-style headers.
 
 Usage:
 
@@ -13,7 +14,7 @@ Usage:
 4. Start it by double clicking on it or from the console. 
 
 
-Version 0.1.0
+Version 0.2.0
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
 For further information see https://github.com/peter88213/zim2obsidian
@@ -38,7 +39,7 @@ for noteFile in glob.glob('**/*.md', recursive=True):
 
     # Read a note file.
     with open(noteFile, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+        lines = f.read().split('\n')
 
     # Generate a new file name from the note's heading.
     if lines[0].startswith('# '):
@@ -50,6 +51,23 @@ for noteFile in glob.glob('**/*.md', recursive=True):
         # Remove first heading.
         del lines[0]
 
+        # Replace Setext-style headers with Atx-style headers.
+        newLines = []
+        previousLine = None
+        for  line in lines:
+            if line.startswith('=') and line.count('=') == len(line):
+                previousLine = f'# {previousLine}'
+            elif line.startswith('-') and line.count('-') == len(line):
+                previousLine = f'## {previousLine}'
+            else:
+                if previousLine is not None:
+                    newLines.append(previousLine)
+                previousLine = line
+        try:
+            newLines.append(previousLine)
+        except:
+            pass
+
         if newName != oldName:
             # Delete the original file.
             os.remove(noteFile)
@@ -59,7 +77,7 @@ for noteFile in glob.glob('**/*.md', recursive=True):
 
         # Save the processed file under the new name.
         with open(noteFile, 'w', encoding='utf-8') as f:
-            f.writelines(lines)
+            f.writelines('\n'.join(newLines))
 
 # Second run: Adjust internal links.
 for noteFile in glob.iglob('**/*.md', recursive=True):
