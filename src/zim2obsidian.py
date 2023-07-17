@@ -14,7 +14,7 @@ Usage:
 4. Start it by double clicking on it or from the console. 
 
 
-Version 0.2.0
+Version 0.2.1
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
 For further information see https://github.com/peter88213/zim2obsidian
@@ -56,8 +56,10 @@ for noteFile in glob.glob('**/*.md', recursive=True):
         previousLine = None
         for  line in lines:
             if line.startswith('=') and line.count('=') == len(line):
+                print(f'Converting 1st level heading "{previousLine}" ...')
                 previousLine = f'# {previousLine}'
             elif line.startswith('-') and line.count('-') == len(line):
+                print(f'Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
             else:
                 if previousLine is not None:
@@ -76,8 +78,9 @@ for noteFile in glob.glob('**/*.md', recursive=True):
             noteNames[oldName] = newName
 
         # Save the processed file under the new name.
+        print(f'Writing "{noteFile}" ...')
         with open(noteFile, 'w', encoding='utf-8') as f:
-            f.writelines('\n'.join(newLines))
+            f.write('\n'.join(newLines))
 
 # Second run: Adjust internal links.
 for noteFile in glob.iglob('**/*.md', recursive=True):
