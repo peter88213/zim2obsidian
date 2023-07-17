@@ -3,8 +3,8 @@
 
 - Loops through all subdirectories of a Zim notebook Markdown export.
 - Removes each note's first level heading and renames the file accordingly. 
+- Replaces Setext-style headers with Atx-style headers.
 - Converts internal links to other pages to Obsidian style.
-- Replace Setext-style headers with Atx-style headers.
 
 Usage:
 
