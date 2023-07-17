@@ -50,4 +50,4 @@ Save the file [markdown2md.py](https://raw.githubusercontent.com/peter88213/mark
 
 ## License
 
-Published under the MIT License (https://opensource.org/licenses/mit-license.php)
+Published under the [MIT License](https://opensource.org/licenses/mit-license.php)
