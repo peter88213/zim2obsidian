@@ -13,12 +13,17 @@ Usage:
 3. Copy this Python script into the export root directory. 
 4. Start it by double clicking on it or from the console. 
 
-
-Version 0.2.1
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
 For further information see https://github.com/peter88213/zim2obsidian
 Published under the MIT License (https://opensource.org/licenses/mit-license.php)
+
+Changelog:
+
+v0.1.0 - Initial release.
+v0.2.0 - Replace Setext-style headers with Atx-style headers.
+v0.2.1 - Improve messaging.
+v0.2.2 - Keep separators.
 """
 
 import glob
@@ -58,7 +63,7 @@ for noteFile in glob.glob('**/*.md', recursive=True):
             if line.startswith('=') and line.count('=') == len(line):
                 print(f'Converting 1st level heading "{previousLine}" ...')
                 previousLine = f'# {previousLine}'
-            elif line.startswith('-') and line.count('-') == len(line):
+            elif line.startswith('-') and previousLine and line.count('-') == len(line):
                 print(f'Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
             else:
