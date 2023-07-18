@@ -27,6 +27,7 @@ v0.2.1 - Improve messaging.
 v0.2.2 - Keep separators.
 v0.3.0 - Convert horizontal lines.
 v0.3.1 - Change the wording.
+v0.3.2 - Fix a bug where the program may abort when a page is empty. 
 """
 
 import glob
@@ -76,10 +77,8 @@ for noteFile in glob.glob('**/*.md', recursive=True):
                 if previousLine is not None:
                     newLines.append(previousLine)
                 previousLine = line
-        try:
+        if previousLine is not None:
             newLines.append(previousLine)
-        except TypeError:
-            pass
 
         if newName != oldName:
             # Delete the original file.
