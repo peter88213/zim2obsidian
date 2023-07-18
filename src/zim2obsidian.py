@@ -4,7 +4,7 @@
 - Loops through all subdirectories of a Zim notebook Markdown export.
 - Removes each note's first level heading and renames the file accordingly. 
 - Replaces Setext-style headers with Atx-style headers.
-- Converts hotizontal lines.
+- Converts horizontal rulers.
 - Converts internal links to other pages to Obsidian style.
 
 Usage:
@@ -26,6 +26,7 @@ v0.2.0 - Replace Setext-style headers with Atx-style headers.
 v0.2.1 - Improve messaging.
 v0.2.2 - Keep separators.
 v0.3.0 - Convert horizontal lines.
+v0.3.1 - Change the wording.
 """
 
 import glob
@@ -35,9 +36,7 @@ import re
 print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
 
 # First run: Get the new note file names.
-
 noteNames = {}
-
 for noteFile in glob.glob('**/*.md', recursive=True):
     noteDir, oldName = os.path.split(noteFile)
     if noteDir:
@@ -58,7 +57,7 @@ for noteFile in glob.glob('**/*.md', recursive=True):
         # Remove first heading.
         del lines[0]
 
-        # Replace Setext-style headers with Atx-style headers; convert separators.
+        # Replace Setext-style headers with Atx-style headers; convert rulers.
         newLines = []
         previousLine = None
         for  line in lines:
@@ -69,7 +68,7 @@ for noteFile in glob.glob('**/*.md', recursive=True):
                 print(f'Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
             elif line.startswith('*') and line.count('*') == len(line):
-                print('Converting horizontal line')
+                print('Converting horizontal ruler ...')
                 if previousLine is not None:
                     newLines.append(previousLine)
                 previousLine = '---'
