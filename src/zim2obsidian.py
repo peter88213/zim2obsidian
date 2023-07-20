@@ -29,140 +29,148 @@ v0.3.0 - Convert horizontal lines.
 v0.3.1 - Change the wording.
 v0.3.2 - Fix a bug where the program may abort when a page is empty. 
 v0.3.3 - Generously comment the code.
+v0.4.0 - Make it a module, ready for testing.
 """
 
 import glob
 import os
 import re
 
-print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
 
-# First run: Get the new note file names.
-noteNames = {}
-# a dictionary; key: old note name, value: new note name (created from the heading)
+def main():
+    print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
 
-for noteFile in glob.glob('**/*.md', recursive=True):
-    # loop through all files with ".md" extension, include subdirectories
+    # First run: Get the new note file names.
+    noteNames = {}
+    # a dictionary; key: old note name, value: new note name (created from the heading)
 
-    noteDir, oldName = os.path.split(noteFile)
-    if noteDir:
-        noteDir = f'{noteDir}/'
-    print(f'Reading "{noteFile}" ...')
+    for noteFile in glob.glob('**/*.md', recursive=True):
+        # loop through all files with ".md" extension, include subdirectories
 
-    # Read a note file.
-    with open(noteFile, 'r', encoding='utf-8') as f:
-        lines = f.read().split('\n')
-        # the original page's lines in a list
+        noteDir, oldName = os.path.split(noteFile)
+        if noteDir:
+            noteDir = f'{noteDir}/'
+        print(f'Reading "{noteFile}" ...')
 
-    # Generate a new file name from the note's heading.
-    if lines[0].startswith('# '):
-        newName = lines[0][2:].strip()
+        # Read a note file.
+        with open(noteFile, 'r', encoding='utf-8') as f:
+            lines = f.read().split('\n')
+            # the original page's lines in a list
 
-        # Remove forbidden characters.
-        newName = newName.replace('"', '').replace("'", '').replace('?', '').replace('*', '')
+        # Generate a new file name from the note's heading.
+        if lines[0].startswith('# '):
+            newName = lines[0][2:].strip()
 
-        # Remove first heading.
-        del lines[0]
+            # Remove forbidden characters.
+            newName = newName.replace('"', '').replace("'", '').replace('?', '').replace('*', '')
 
-        # Replace Setext-style headings with Atx-style headings; convert rulers.
+            # Remove first heading.
+            del lines[0]
 
-        newLines = []
-        # the processed page's lines in a list (to be populated during processing)
+            # Replace Setext-style headings with Atx-style headings; convert rulers.
 
-        previousLine = None
-        # A first or second level heading is reformatted depending on the line that follows it.
-        # For this, the previous line must be temporarily stored for processing.
+            newLines = []
+            # the processed page's lines in a list (to be populated during processing)
 
-        for  line in lines:
+            previousLine = None
+            # A first or second level heading is reformatted depending on the line that follows it.
+            # For this, the previous line must be temporarily stored for processing.
 
-            # Loop through the original page's lines and create the processed page's lines.
+            for  line in lines:
 
-            if line.startswith('=') and line.count('=') == len(line):
-                # the actual line is a 1st level heading's underline
+                # Loop through the original page's lines and create the processed page's lines.
 
-                print(f'Converting 1st level heading "{previousLine}" ...')
-                previousLine = f'# {previousLine}'
-                # adding a hashtag and a space to the previous line, discarding the actual line
+                if line.startswith('=') and line.count('=') == len(line):
+                    # the actual line is a 1st level heading's underline
 
-            elif line.startswith('-') and line.count('-') == len(line):
-                # the actual line is a 2nd level heading's underline
+                    print(f'Converting 1st level heading "{previousLine}" ...')
+                    previousLine = f'# {previousLine}'
+                    # adding a hashtag and a space to the previous line, discarding the actual line
 
-                print(f'Converting 2nd level heading "{previousLine}" ...')
-                previousLine = f'## {previousLine}'
-                # adding two hashtags and a space to the previous line, discarding the actual line
+                elif line.startswith('-') and line.count('-') == len(line):
+                    # the actual line is a 2nd level heading's underline
 
-            elif line.startswith('*') and line.count('*') == len(line):
-                # the actual line is a horizontal ruler (ZIM export style)
+                    print(f'Converting 2nd level heading "{previousLine}" ...')
+                    previousLine = f'## {previousLine}'
+                    # adding two hashtags and a space to the previous line, discarding the actual line
 
-                print('Converting horizontal ruler ...')
-                if previousLine is not None:
-                    newLines.append(previousLine)
-                    # adding the previous line to the list of processed lines
+                elif line.startswith('*') and line.count('*') == len(line):
+                    # the actual line is a horizontal ruler (ZIM export style)
 
-                previousLine = '---'
-                # replacing the actual line with a standard Markdown horizontal ruler
+                    print('Converting horizontal ruler ...')
+                    if previousLine is not None:
+                        newLines.append(previousLine)
+                        # adding the previous line to the list of processed lines
 
-            else:
-                # nothing to convert ...
+                    previousLine = '---'
+                    # replacing the actual line with a standard Markdown horizontal ruler
 
-                if previousLine is not None:
-                    newLines.append(previousLine)
-                    # adding the previous line to the list of processed lines
+                else:
+                    # nothing to convert ...
 
-                previousLine = line
-                # storing the line temporarily, because the next line could be an "underline"
+                    if previousLine is not None:
+                        newLines.append(previousLine)
+                        # adding the previous line to the list of processed lines
 
-        if previousLine is not None:
-            newLines.append(previousLine)
-            # adding the very last line to the list of processed lines
+                    previousLine = line
+                    # storing the line temporarily, because the next line could be an "underline"
 
-        if newName != oldName:
-            # Delete the original file.
-            os.remove(noteFile)
+            if previousLine is not None:
+                newLines.append(previousLine)
+                # adding the very last line to the list of processed lines
 
-            noteFile = f'{noteDir}{newName}.md'
-            noteNames[oldName] = newName
+            if newName != oldName:
+                # Delete the original file.
+                os.remove(noteFile)
 
-        # Save the processed file under the new name.
-        print(f'Writing "{noteFile}" ...')
+                noteFile = f'{noteDir}{newName}.md'
+                noteNames[oldName] = newName
+
+            # Save the processed file under the new name.
+            print(f'Writing "{noteFile}" ...')
+            with open(noteFile, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(newLines))
+
+    # Second run: Adjust internal links.
+    for noteFile in glob.iglob('**/*.md', recursive=True):
+        # loop through all files with ".md" extension, include subdirectories
+
+        print(f'Adjusting links in "{noteFile}" ...')
+        with open(noteFile, 'r', encoding='utf-8') as f:
+            text = f.read()
+            # a string containing the whole page
+
+        # Get all links.
+        links = re.findall('\[.+?\]\(.+?\)', text)
+        # a list with all Markdown links found in the page
+
+        for link in links:
+            # outer loop: links in the page
+
+            for noteName in noteNames:
+                # inner loop: the original file names of the exported notebook
+
+                if noteName in link:
+                    # Create an adjusted link.
+                    newLink = link.replace(noteName, noteNames[noteName])
+                    # replacing the original file name with the new file name
+
+                    # Convert Markdown link to Obsidian link.
+                    newLink = re.sub('\[.+?\]', '', newLink)
+                    newLink = newLink.replace('(./', '[[')
+                    newLink = newLink.replace('(', '[[')
+                    newLink = newLink.replace(')', ']]')
+
+                    # Replace the Markdown links by Obsidian style links.
+                    text = text.replace(link, newLink)
+
+        # Save the processed file.
         with open(noteFile, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(newLines))
+            f.write(text)
 
-# Second run: Adjust internal links.
-for noteFile in glob.iglob('**/*.md', recursive=True):
-    # loop through all files with ".md" extension, include subdirectories
+    print('\nDone.')
 
-    print(f'Adjusting links in "{noteFile}" ...')
-    with open(noteFile, 'r', encoding='utf-8') as f:
-        text = f.read()
-        # a string containing the whole page
 
-    # Get all links.
-    links = re.findall('\[.+?\]\(.+?\)', text)
-    # a list with all Markdown links found in the page
+if __name__ == '__main__':
+    main()
 
-    for link in links:
-        # outer loop: links in the page
-
-        for noteName in noteNames:
-            # inner loop: the original file names of the exported notebook
-
-            if noteName in link:
-                # Create an adjusted link.
-                newLink = link.replace(noteName, noteNames[noteName])
-                # replacing the original file name with the new file name
-
-                # Convert Markdown link to Obsidian link.
-                newLink = re.sub('\[.+?\]', '', newLink)
-                newLink = newLink.replace('(./', '[[')
-                newLink = newLink.replace('(', '[[')
-                newLink = newLink.replace(')', ']]')
-
-                # Replace the Markdown links by Obsidian style links.
-                text = text.replace(link, newLink)
-
-    # Save the processed file.
-    with open(noteFile, 'w', encoding='utf-8') as f:
-        f.write(text)
-
-print('\nDone.')
