@@ -27,7 +27,7 @@ Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/mar
 
 ---
 
-## Feature requests?
+## Feedback? Ideas? Feature requests?
 
 Be aware, this is open source software, and you can implement your own features either locally
 after downloading and unpacking the [latest release](https://github.com/peter88213/zim2obsidian/releases/latest), 
