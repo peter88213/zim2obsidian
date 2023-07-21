@@ -30,6 +30,7 @@ v0.3.1 - Change the wording.
 v0.3.2 - Fix a bug where the program may abort when a page is empty. 
 v0.3.3 - Generously comment the code.
 v0.4.0 - Make it a module, ready for testing.
+v0.4.1 - Extend the set of characters that filenames cannot contain.
 """
 
 import glob
@@ -39,6 +40,9 @@ import re
 
 def main():
     print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
+
+    FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
+    # set of characters that filenames cannot contain
 
     # First run: Get the new note file names.
     noteNames = {}
@@ -61,8 +65,9 @@ def main():
         if lines[0].startswith('# '):
             newName = lines[0][2:].strip()
 
-            # Remove forbidden characters.
-            newName = newName.replace('"', '').replace("'", '').replace('?', '').replace('*', '')
+            # Remove characters that filenames cannot contain.
+            for c in FORBIDDEN_CHARACTERS:
+                newName = newName.replace(c, '')
 
             # Remove first heading.
             del lines[0]

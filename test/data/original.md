@@ -1,4 +1,4 @@
-# Home
+# "Home\\/?|:<>"
 First level heading
 ===================
 
