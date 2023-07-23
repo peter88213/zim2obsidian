@@ -37,6 +37,7 @@ v0.5.0 - Fix a bug where directories may be linked instead of pages.
          Make the script no longer rename pages.
 v0.6.0 - Enable page renaming feature, now fixed.
          Also convert unlabeled links.
+v0.6.1 - Refactor the code.
 """
 
 import glob
@@ -118,9 +119,9 @@ def remove_first_line():
         print(f'Removing the first line of "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-            del lines[0]
-            with open(noteFile, 'w', encoding='utf-8') as f:
-                f.writelines(lines)
+        del lines[0]
+        with open(noteFile, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
 
 
 def change_heading_style():
@@ -129,37 +130,36 @@ def change_heading_style():
         print(f'Reading "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.read().split('\n')
-            newLines = []
+        newLines = []
+        previousLine = None
+        # A first or second level heading is reformatted depending on the line that follows it.
+        # For this, the previous line must be temporarily stored for processing.
 
-            previousLine = None
-            # A first or second level heading is reformatted depending on the line that follows it.
-            # For this, the previous line must be temporarily stored for processing.
+        for  line in lines:
+            if line.startswith('=') and line.count('=') == len(line):
+                print(f'Converting 1st level heading "{previousLine}" ...')
+                previousLine = f'# {previousLine}'
+            elif line.startswith('-') and line.count('-') == len(line):
+                print(f'Converting 2nd level heading "{previousLine}" ...')
+                previousLine = f'## {previousLine}'
+            elif line.startswith('*') and line.count('*') == len(line):
+                print('Converting horizontal ruler ...')
+                if previousLine is not None:
+                    newLines.append(previousLine)
+                previousLine = '---'
+            else:
+                # nothing to convert ...
+                if previousLine is not None:
+                    newLines.append(previousLine)
+                previousLine = line
+                # storing the line temporarily, because the next line could be an "underline"
+        if previousLine is not None:
+            newLines.append(previousLine)
+            # adding the very last line to the list of processed lines
 
-            for  line in lines:
-                if line.startswith('=') and line.count('=') == len(line):
-                    print(f'Converting 1st level heading "{previousLine}" ...')
-                    previousLine = f'# {previousLine}'
-                elif line.startswith('-') and line.count('-') == len(line):
-                    print(f'Converting 2nd level heading "{previousLine}" ...')
-                    previousLine = f'## {previousLine}'
-                elif line.startswith('*') and line.count('*') == len(line):
-                    print('Converting horizontal ruler ...')
-                    if previousLine is not None:
-                        newLines.append(previousLine)
-                    previousLine = '---'
-                else:
-                    # nothing to convert ...
-                    if previousLine is not None:
-                        newLines.append(previousLine)
-                    previousLine = line
-                    # storing the line temporarily, because the next line could be an "underline"
-            if previousLine is not None:
-                newLines.append(previousLine)
-                # adding the very last line to the list of processed lines
-
-            print(f'Writing "{noteFile}" ...')
-            with open(noteFile, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(newLines))
+        print(f'Writing "{noteFile}" ...')
+        with open(noteFile, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(newLines))
 
 
 def reformat_links():
