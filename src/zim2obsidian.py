@@ -2,6 +2,7 @@
 """Convert Zim Markdown export to Obsidian.
 
 - Loops through all subdirectories of a Zim notebook Markdown export.
+- Optionally renames pages according to the names given by the top first level heading.
 - Optionally removes each note's first line. 
 - Optionally replaces Setext-style headers with Atx-style headers and converts horizontal rulers.
 - Optionally converts internal links to other pages to Obsidian style.
@@ -34,6 +35,8 @@ v0.5.0 - Fix a bug where directories may be linked instead of pages.
          Make the script configurable by modularizing the features.
          Handle links with braces in the filename.
          Make the script no longer rename pages.
+v0.6.0 - Enable page renaming feature, now fixed.
+         Also convert unlabeled links.
 """
 
 import glob
@@ -42,9 +45,8 @@ import re
 
 # Configuration (to be changed by the user).
 
-RENAME_PAGES = False
+RENAME_PAGES = True
 # if True, rename pages according to the names given by the top first level heading.
-# Attention: Adjusting the links does not work flawlessly yet!
 
 REMOVE_FIRST_LINE = True
 # If True, remove the top heading inserted with Zim's default Markdown exporter template.
@@ -57,10 +59,7 @@ REFORMAT_LINKS = True
 
 
 def rename_pages():
-    """Rename pages according to the names given by the top first level heading.
-    
-    Attention: Adjusting the links does not work flawlessly yet!
-    """
+    """Rename pages according to the names given by the top first level heading."""
 
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
     # set of characters that filenames cannot contain
@@ -103,10 +102,14 @@ def rename_pages():
         print(f'Adjusting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
             page = f.read()
-            for noteName in noteNames:
-                page = re.sub(f'\[(.+)\]\({noteName}\)', f'[\\1]({noteNames[noteName]})', page)
-            with open(noteFile, 'w', encoding='utf-8') as f:
-                f.write(page)
+        for noteName in noteNames:
+            links = re.findall(f'\[.+\]\((.*{noteName})\)', page)
+            for oldLink in links:
+                newLink = oldLink.replace(noteName, noteNames[noteName])
+                print(f'{oldLink} --> {newLink}')
+                page = page.replace(oldLink, newLink)
+        with open(noteFile, 'w', encoding='utf-8') as f:
+            f.write(page)
 
 
 def remove_first_line():
@@ -165,7 +168,7 @@ def reformat_links():
         print(f'Re-formatting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
             page = f.read()
-        page = re.sub('\[(.+)\]\((.+)\)', '[[\\2]]', page)
+        page = re.sub('\[(.*)\]\((.+)\)', '[[\\2]]', page)
         page = page.replace('[[./', '[[')
         with open(noteFile, 'w', encoding='utf-8') as f:
             f.write(page)
