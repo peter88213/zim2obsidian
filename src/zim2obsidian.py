@@ -43,6 +43,7 @@ v0.6.3 - Optimize the code for low memory consumption.
          Improve messaging to obtain a full log.
 v0.6.4 - Do not rename a page if another page with the new filename exists.
          Refactor the code for faster execution.
+v0.6.5 - Make the change from v0.6.4 also work on non-Windows systems.
 """
 
 import glob
@@ -70,24 +71,24 @@ def rename_pages():
     Note: Make sure to call this procedure before the page's first lines are removed.
     """
 
+    # First run: Get the new note file names.
+
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
     # set of characters that filenames cannot contain
 
-    # First run: Get the new note file names.
     noteNames = {}
     # a dictionary; key: old note name, value: new note name (created from the heading)
 
+    # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
-        # loop through all files with ".md" extension, include subdirectories
-
         noteDir, oldName = os.path.split(noteFile)
         if noteDir:
             noteDir = f'{noteDir}/'
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
-        # Generate a new file name from the note's heading.
         if lines[0].startswith('# '):
+            # Generate a new file name from the note's heading.
             newName = f'{lines[0][2:].strip()}.md'
 
             # Remove characters that filenames cannot contain.
@@ -95,18 +96,18 @@ def rename_pages():
                 newName = newName.replace(c, '')
 
             if newName != oldName:
-                newFile = f'{noteDir}{newName}'
-
                 # Rename the file.
-                try:
-                    os.rename(noteFile, newFile)
-                except:
-                    print(f'Cannot rename "{noteFile}" to "{newFile}" ...')
-                else:
+                newFile = f'{noteDir}{newName}'
+                if not os.path.exists(newFile):
                     print(f'Renaming "{noteFile}" to "{newFile}" ...')
+                    os.rename(noteFile, newFile)
                     noteNames[oldName] = newName
+                else:
+                    print(f'Cannot rename "{noteFile}" to "{newFile}" ...')
 
     # Second run: Adjust internal links.
+
+    # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Adjusting links in "{noteFile}" ...')
         hasChanged = False
@@ -126,6 +127,7 @@ def rename_pages():
 
 def remove_first_line():
     """Remove the first heading inserted with Zim's default Markdown exporter template."""
+    # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Removing the first line of "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
@@ -137,6 +139,7 @@ def remove_first_line():
 
 def change_heading_style():
     """Replace Setext-style headings with Atx-style headings; convert rulers."""
+    # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting headings in "{noteFile}" ...')
         hasChanged = False
@@ -179,6 +182,7 @@ def change_heading_style():
 
 def reformat_links():
     """Change Markdown-style links to Obsidian-style links."""
+    # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
