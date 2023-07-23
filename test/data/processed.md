@@ -6,7 +6,7 @@ blabla
 
 [[Some dir/Some page.md]]
 
-blabla
+blabla ==highlighted== blabla ==highlighted==.
 
 
 ---

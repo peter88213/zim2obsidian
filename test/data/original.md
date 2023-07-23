@@ -9,7 +9,7 @@ Second level heading
 
 [+Some page](./Some dir/Some page.md)
 
-blabla
+blabla __highlighted__ blabla __highlighted__.
 
 
 *****

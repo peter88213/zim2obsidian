@@ -59,8 +59,8 @@ RENAME_PAGES = True
 REMOVE_FIRST_LINE = True
 # If True, remove the top heading inserted with Zim's default Markdown exporter template.
 
-CHANGE_HEADING_STYLE = True
-# If True, replace Setext-style headings with Atx-style headings; convert rulers.
+CHANGE_MARKDOWN_STYLE = True
+# If True, convert Markdown formatting to Obsidian style.
 
 REFORMAT_LINKS = True
 # If True, change Markdown-style links to Obsidian-style links.
@@ -118,7 +118,7 @@ def rename_pages():
             links = re.findall(f'\[.+(\]\(.*{noteName}\))', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, noteNames[noteName])
-                print(f'- Changing {oldLink} to {newLink}')
+                print(f'- Replacing {oldLink} with {newLink}')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
         if hasChanged:
@@ -138,8 +138,13 @@ def remove_first_line():
             f.writelines(lines)
 
 
-def change_heading_style():
-    """Replace Setext-style headings with Atx-style headings; convert rulers."""
+def change_md_style():
+    """Convert Markdown formatting to Obsidian style.
+    
+    - Replace Setext-style headings with Atx-style headings
+    - Convert rulers.
+    - Convert highlighting.
+    """
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting headings in "{noteFile}" ...')
@@ -167,10 +172,10 @@ def change_heading_style():
                 previousLine = '---'
                 hasChanged = True
             else:
-                # nothing to convert ...
                 if previousLine is not None:
                     newLines.append(previousLine)
-                previousLine = line
+                # Convert highlighting.
+                previousLine = re.sub('__(.+?)__', '==\\1==', line)
                 # storing the line temporarily, because the next line could be an "underline"
         if previousLine is not None:
             newLines.append(previousLine)
@@ -200,8 +205,8 @@ def main():
         rename_pages()
     if REMOVE_FIRST_LINE:
         remove_first_line()
-    if CHANGE_HEADING_STYLE:
-        change_heading_style()
+    if CHANGE_MARKDOWN_STYLE:
+        change_md_style()
     if REFORMAT_LINKS:
         reformat_links()
     print('\nDone.')
