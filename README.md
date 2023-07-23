@@ -3,10 +3,9 @@
 Convert Zim Markdown export to Obsidian.
 
 - Loops through all subdirectories of a *Zim* notebook Markdown export.
-- Removes each note's first level heading and renames the file accordingly. 
-- Replaces Setext-style headers with Atx-style headers.
-- Converts horizontal rulers.
-- Converts internal links to other pages from Markdown standard to Obsidian style.
+- Optionally removes each note's first line. 
+- Optionally replaces Setext-style headers with Atx-style headers and converts horizontal rulers.
+- Optionally converts internal links to other pages to Obsidian style.
 
 Note: The Zim Markdown export is specified [here](https://github.com/zim-desktop-wiki/zim-desktop-wiki/blob/develop/zim/formats/markdown.py) and [here](https://github.com/zim-desktop-wiki/zim-desktop-wiki/blob/develop/zim/formats/plain.py).
 

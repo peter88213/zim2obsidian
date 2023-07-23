@@ -4,6 +4,8 @@ blabla
 
 ## Second level heading
 
+[[Some dir/Some page.md]]
+
 blabla
 
 

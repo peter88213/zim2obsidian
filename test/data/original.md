@@ -7,6 +7,8 @@ blabla
 Second level heading
 --------------------
 
+[+Some page](./Some dir/Some page.md)
+
 blabla
 
 

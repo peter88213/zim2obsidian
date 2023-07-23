@@ -2,10 +2,9 @@
 """Convert Zim Markdown export to Obsidian.
 
 - Loops through all subdirectories of a Zim notebook Markdown export.
-- Removes each note's first level heading and renames the file accordingly. 
-- Replaces Setext-style headers with Atx-style headers.
-- Converts horizontal rulers.
-- Converts internal links to other pages to Obsidian style.
+- Optionally removes each note's first line. 
+- Optionally replaces Setext-style headers with Atx-style headers and converts horizontal rulers.
+- Optionally converts internal links to other pages to Obsidian style.
 
 Usage:
 
@@ -31,15 +30,37 @@ v0.3.2 - Fix a bug where the program may abort when a page is empty.
 v0.3.3 - Generously comment the code.
 v0.4.0 - Make it a module, ready for testing.
 v0.4.1 - Extend the set of characters that filenames cannot contain.
+v0.5.0 - Fix a bug where directories may be linked instead of pages. 
+         Make the script configurable by modularizing the features.
+         Handle links with braces in the filename.
+         Make the script no longer rename pages.
 """
 
 import glob
 import os
 import re
 
+# Configuration (to be changed by the user).
 
-def main():
-    print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
+RENAME_PAGES = False
+# if True, rename pages according to the names given by the top first level heading.
+# Attention: Adjusting the links does not work flawlessly yet!
+
+REMOVE_FIRST_LINE = True
+# If True, remove the top heading inserted with Zim's default Markdown exporter template.
+
+CHANGE_HEADING_STYLE = True
+# If True, replace Setext-style headings with Atx-style headings; convert rulers.
+
+REFORMAT_LINKS = True
+# If True, change Markdown-style links to Obsidian-style links.
+
+
+def rename_pages():
+    """Rename pages according to the names given by the top first level heading.
+    
+    Attention: Adjusting the links does not work flawlessly yet!
+    """
 
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
     # set of characters that filenames cannot contain
@@ -54,125 +75,112 @@ def main():
         noteDir, oldName = os.path.split(noteFile)
         if noteDir:
             noteDir = f'{noteDir}/'
-        print(f'Reading "{noteFile}" ...')
-
-        # Read a note file.
         with open(noteFile, 'r', encoding='utf-8') as f:
-            lines = f.read().split('\n')
-            # the original page's lines in a list
+            lines = f.readlines()
 
         # Generate a new file name from the note's heading.
         if lines[0].startswith('# '):
-            newName = lines[0][2:].strip()
+            newName = f'{lines[0][2:].strip()}.md'
 
             # Remove characters that filenames cannot contain.
             for c in FORBIDDEN_CHARACTERS:
                 newName = newName.replace(c, '')
 
-            # Remove first heading.
+            if newName != oldName:
+                print(f'Renaming "{noteFile}" ...')
+
+                # Delete the original file.
+                os.remove(noteFile)
+
+                # Save the processed file under the new name.
+                noteFile = f'{noteDir}{newName}'
+                noteNames[oldName] = newName
+                with open(noteFile, 'w', encoding='utf-8') as f:
+                    f.writelines(lines)
+
+    # Second run: Adjust internal links.
+    for noteFile in glob.glob('**/*.md', recursive=True):
+        print(f'Adjusting links in "{noteFile}" ...')
+        with open(noteFile, 'r', encoding='utf-8') as f:
+            page = f.read()
+            for noteName in noteNames:
+                page = re.sub(f'\[(.+)\]\({noteName}\)', f'[\\1]({noteNames[noteName]})', page)
+            with open(noteFile, 'w', encoding='utf-8') as f:
+                f.write(page)
+
+
+def remove_first_line():
+    """Remove the first heading inserted with Zim's default Markdown exporter template."""
+    for noteFile in glob.glob('**/*.md', recursive=True):
+        print(f'Removing the first line of "{noteFile}" ...')
+        with open(noteFile, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
             del lines[0]
+            with open(noteFile, 'w', encoding='utf-8') as f:
+                f.writelines(lines)
 
-            # Replace Setext-style headings with Atx-style headings; convert rulers.
 
+def change_heading_style():
+    """Replace Setext-style headings with Atx-style headings; convert rulers."""
+    for noteFile in glob.glob('**/*.md', recursive=True):
+        print(f'Reading "{noteFile}" ...')
+        with open(noteFile, 'r', encoding='utf-8') as f:
+            lines = f.read().split('\n')
             newLines = []
-            # the processed page's lines in a list (to be populated during processing)
 
             previousLine = None
             # A first or second level heading is reformatted depending on the line that follows it.
             # For this, the previous line must be temporarily stored for processing.
 
             for  line in lines:
-
-                # Loop through the original page's lines and create the processed page's lines.
-
                 if line.startswith('=') and line.count('=') == len(line):
-                    # the actual line is a 1st level heading's underline
-
                     print(f'Converting 1st level heading "{previousLine}" ...')
                     previousLine = f'# {previousLine}'
-                    # adding a hashtag and a space to the previous line, discarding the actual line
-
                 elif line.startswith('-') and line.count('-') == len(line):
-                    # the actual line is a 2nd level heading's underline
-
                     print(f'Converting 2nd level heading "{previousLine}" ...')
                     previousLine = f'## {previousLine}'
-                    # adding two hashtags and a space to the previous line, discarding the actual line
-
                 elif line.startswith('*') and line.count('*') == len(line):
-                    # the actual line is a horizontal ruler (ZIM export style)
-
                     print('Converting horizontal ruler ...')
                     if previousLine is not None:
                         newLines.append(previousLine)
-                        # adding the previous line to the list of processed lines
-
                     previousLine = '---'
-                    # replacing the actual line with a standard Markdown horizontal ruler
-
                 else:
                     # nothing to convert ...
-
                     if previousLine is not None:
                         newLines.append(previousLine)
-                        # adding the previous line to the list of processed lines
-
                     previousLine = line
                     # storing the line temporarily, because the next line could be an "underline"
-
             if previousLine is not None:
                 newLines.append(previousLine)
                 # adding the very last line to the list of processed lines
 
-            if newName != oldName:
-                # Delete the original file.
-                os.remove(noteFile)
-
-                noteFile = f'{noteDir}{newName}.md'
-                noteNames[oldName] = newName
-
-            # Save the processed file under the new name.
             print(f'Writing "{noteFile}" ...')
             with open(noteFile, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(newLines))
 
-    # Second run: Adjust internal links.
-    for noteFile in glob.iglob('**/*.md', recursive=True):
-        # loop through all files with ".md" extension, include subdirectories
 
-        print(f'Adjusting links in "{noteFile}" ...')
+def reformat_links():
+    """Change Markdown-style links to Obsidian-style links."""
+    for noteFile in glob.glob('**/*.md', recursive=True):
+        print(f'Re-formatting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
-            text = f.read()
-            # a string containing the whole page
-
-        # Get all links.
-        links = re.findall('\[.+?\]\(.+?\)', text)
-        # a list with all Markdown links found in the page
-
-        for link in links:
-            # outer loop: links in the page
-
-            for noteName in noteNames:
-                # inner loop: the original file names of the exported notebook
-
-                if noteName in link:
-                    # Create an adjusted link.
-                    newLink = link.replace(noteName, noteNames[noteName])
-                    # replacing the original file name with the new file name
-
-                    # Convert Markdown link to Obsidian link.
-                    newLink = re.sub('\[.+?\]', '', newLink)
-                    newLink = newLink.replace('(./', '[[')
-                    newLink = newLink.replace('(', '[[')
-                    newLink = newLink.replace(')', ']]')
-
-                    # Replace the Markdown links by Obsidian style links.
-                    text = text.replace(link, newLink)
-
-        # Save the processed file.
+            page = f.read()
+        page = re.sub('\[(.+)\]\((.+)\)', '[[\\2]]', page)
+        page = page.replace('[[./', '[[')
         with open(noteFile, 'w', encoding='utf-8') as f:
-            f.write(text)
+            f.write(page)
 
+
+def main():
+    print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
+    if RENAME_PAGES:
+        rename_pages()
+    if CHANGE_HEADING_STYLE:
+        change_heading_style()
+    if REMOVE_FIRST_LINE:
+        remove_first_line()
+    if REFORMAT_LINKS:
+        reformat_links()
     print('\nDone.')
 
 
