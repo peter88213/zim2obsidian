@@ -21,19 +21,9 @@ os.chdir(TEST_DIR)
 
 
 def read_file(inputFile):
-    """Read a utf-8 or ANSI encoded text file.
-    
-    Positional arguments:
-        inputFile -- str: path of the file to read.
-        
-    Return a string.
-    """
-    try:
-        with open(inputFile, 'r', encoding='utf-8') as f:
-            return f.read()
-    except:
-        with open(inputFile, 'r') as f:
-            return f.read()
+    """Read a utf-8 encoded text file and return the contents as a string."""
+    with open(inputFile, 'r', encoding='utf-8') as f:
+        return f.read()
 
 
 class SinglePageTest(unittest.TestCase):

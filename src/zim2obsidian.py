@@ -41,6 +41,8 @@ v0.6.1 - Refactor the code.
 v0.6.2 - Speed up the script by rewriting only changed pages.
 v0.6.3 - Optimize the code for low memory consumption.
          Improve messaging to obtain a full log.
+v0.6.4 - Do not rename a page if another page with the new filename exists.
+         Refactor the code for faster execution.
 """
 
 import glob
@@ -94,16 +96,15 @@ def rename_pages():
 
             if newName != oldName:
                 newFile = f'{noteDir}{newName}'
-                print(f'Renaming "{noteFile}" to "{newFile}" ...')
 
-                # Delete the original file.
-                os.remove(noteFile)
-
-                # Save the processed file under the new name.
-                noteFile = newFile
-                noteNames[oldName] = newName
-                with open(noteFile, 'w', encoding='utf-8') as f:
-                    f.writelines(lines)
+                # Rename the file.
+                try:
+                    os.rename(noteFile, newFile)
+                except:
+                    print(f'Cannot rename "{noteFile}" to "{newFile}" ...')
+                else:
+                    print(f'Renaming "{noteFile}" to "{newFile}" ...')
+                    noteNames[oldName] = newName
 
     # Second run: Adjust internal links.
     for noteFile in glob.iglob('**/*.md', recursive=True):
