@@ -38,6 +38,7 @@ v0.5.0 - Fix a bug where directories may be linked instead of pages.
 v0.6.0 - Enable page renaming feature, now fixed.
          Also convert unlabeled links.
 v0.6.1 - Refactor the code.
+v0.6.2 - Speed up the script by rewriting only changed pages.
 """
 
 import glob
@@ -101,16 +102,19 @@ def rename_pages():
     # Second run: Adjust internal links.
     for noteFile in glob.glob('**/*.md', recursive=True):
         print(f'Adjusting links in "{noteFile}" ...')
+        hasChanged = False
         with open(noteFile, 'r', encoding='utf-8') as f:
             page = f.read()
         for noteName in noteNames:
             links = re.findall(f'\[.+\]\((.*{noteName})\)', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, noteNames[noteName])
-                print(f'{oldLink} --> {newLink}')
+                print(f'"{oldLink}"-->"{newLink}"')
                 page = page.replace(oldLink, newLink)
-        with open(noteFile, 'w', encoding='utf-8') as f:
-            f.write(page)
+                hasChanged = True
+        if hasChanged:
+            with open(noteFile, 'w', encoding='utf-8') as f:
+                f.write(page)
 
 
 def remove_first_line():

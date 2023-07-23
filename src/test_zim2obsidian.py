@@ -1,4 +1,4 @@
-"""Regression test for the zim2obsidian script
+"""Test script for the zim2obsidian script
 
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
@@ -35,7 +35,7 @@ def read_file(inputFile):
             return f.read()
 
 
-class RegressionTest(unittest.TestCase):
+class SinglePageTest(unittest.TestCase):
     """Test case: convert a single page exported by zim."""
 
     def setUp(self):
