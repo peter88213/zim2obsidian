@@ -1,6 +1,6 @@
 # zim2obsidian
 
-Convert Zim Markdown export to Obsidian.
+Post-process Zim Markdown export for use with Obsidian.
 
 - Loops through all subdirectories of a *Zim* notebook Markdown export.
 - Optionally renames pages according to the names given by the top first level heading.
