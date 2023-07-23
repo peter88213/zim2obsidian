@@ -44,6 +44,7 @@ v0.6.3 - Optimize the code for low memory consumption.
 v0.6.4 - Do not rename a page if another page with the new filename exists.
          Refactor the code for faster execution.
 v0.6.5 - Make the change from v0.6.4 also work on non-Windows systems.
+v0.6.6 - Secure the link adjustment against mistakes.
 """
 
 import glob
@@ -114,10 +115,10 @@ def rename_pages():
         with open(noteFile, 'r', encoding='utf-8') as f:
             page = f.read()
         for noteName in noteNames:
-            links = re.findall(f'\[.+\]\((.*{noteName})\)', page)
+            links = re.findall(f'\[.+(\]\(.*{noteName}\))', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, noteNames[noteName])
-                print(f'- Changing "{oldLink}" to "{newLink}"')
+                print(f'- Changing {oldLink} to {newLink}')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
         if hasChanged:
