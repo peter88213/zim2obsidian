@@ -45,6 +45,7 @@ v0.6.4 - Do not rename a page if another page with the new filename exists.
          Refactor the code for faster execution.
 v0.6.5 - Make the change from v0.6.4 also work on non-Windows systems.
 v0.6.6 - Secure the link adjustment against mistakes.
+v0.7.0 - Convert highlighting.
 """
 
 import glob
