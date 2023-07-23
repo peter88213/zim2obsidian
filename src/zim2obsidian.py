@@ -39,6 +39,8 @@ v0.6.0 - Enable page renaming feature, now fixed.
          Also convert unlabeled links.
 v0.6.1 - Refactor the code.
 v0.6.2 - Speed up the script by rewriting only changed pages.
+v0.6.3 - Optimize the code for low memory consumption.
+         Improve messaging to obtain a full log.
 """
 
 import glob
@@ -61,7 +63,10 @@ REFORMAT_LINKS = True
 
 
 def rename_pages():
-    """Rename pages according to the names given by the top first level heading."""
+    """Rename pages according to the names given by the top first level heading.
+    
+    Note: Make sure to call this procedure before the page's first lines are removed.
+    """
 
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
     # set of characters that filenames cannot contain
@@ -70,7 +75,7 @@ def rename_pages():
     noteNames = {}
     # a dictionary; key: old note name, value: new note name (created from the heading)
 
-    for noteFile in glob.glob('**/*.md', recursive=True):
+    for noteFile in glob.iglob('**/*.md', recursive=True):
         # loop through all files with ".md" extension, include subdirectories
 
         noteDir, oldName = os.path.split(noteFile)
@@ -88,19 +93,20 @@ def rename_pages():
                 newName = newName.replace(c, '')
 
             if newName != oldName:
-                print(f'Renaming "{noteFile}" ...')
+                newFile = f'{noteDir}{newName}'
+                print(f'Renaming "{noteFile}" to "{newFile}" ...')
 
                 # Delete the original file.
                 os.remove(noteFile)
 
                 # Save the processed file under the new name.
-                noteFile = f'{noteDir}{newName}'
+                noteFile = newFile
                 noteNames[oldName] = newName
                 with open(noteFile, 'w', encoding='utf-8') as f:
                     f.writelines(lines)
 
     # Second run: Adjust internal links.
-    for noteFile in glob.glob('**/*.md', recursive=True):
+    for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Adjusting links in "{noteFile}" ...')
         hasChanged = False
         with open(noteFile, 'r', encoding='utf-8') as f:
@@ -109,7 +115,7 @@ def rename_pages():
             links = re.findall(f'\[.+\]\((.*{noteName})\)', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, noteNames[noteName])
-                print(f'"{oldLink}"-->"{newLink}"')
+                print(f'- Changing "{oldLink}" to "{newLink}"')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
         if hasChanged:
@@ -119,7 +125,7 @@ def rename_pages():
 
 def remove_first_line():
     """Remove the first heading inserted with Zim's default Markdown exporter template."""
-    for noteFile in glob.glob('**/*.md', recursive=True):
+    for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Removing the first line of "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -130,8 +136,9 @@ def remove_first_line():
 
 def change_heading_style():
     """Replace Setext-style headings with Atx-style headings; convert rulers."""
-    for noteFile in glob.glob('**/*.md', recursive=True):
-        print(f'Reading "{noteFile}" ...')
+    for noteFile in glob.iglob('**/*.md', recursive=True):
+        print(f'Reformatting headings in "{noteFile}" ...')
+        hasChanged = False
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.read().split('\n')
         newLines = []
@@ -141,16 +148,19 @@ def change_heading_style():
 
         for  line in lines:
             if line.startswith('=') and line.count('=') == len(line):
-                print(f'Converting 1st level heading "{previousLine}" ...')
+                print(f'- Converting 1st level heading "{previousLine}" ...')
                 previousLine = f'# {previousLine}'
+                hasChanged = True
             elif line.startswith('-') and line.count('-') == len(line):
-                print(f'Converting 2nd level heading "{previousLine}" ...')
+                print(f'- Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
+                hasChanged = True
             elif line.startswith('*') and line.count('*') == len(line):
-                print('Converting horizontal ruler ...')
+                print('- Converting horizontal ruler ...')
                 if previousLine is not None:
                     newLines.append(previousLine)
                 previousLine = '---'
+                hasChanged = True
             else:
                 # nothing to convert ...
                 if previousLine is not None:
@@ -161,18 +171,18 @@ def change_heading_style():
             newLines.append(previousLine)
             # adding the very last line to the list of processed lines
 
-        print(f'Writing "{noteFile}" ...')
-        with open(noteFile, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(newLines))
+        if hasChanged:
+            with open(noteFile, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(newLines))
 
 
 def reformat_links():
     """Change Markdown-style links to Obsidian-style links."""
-    for noteFile in glob.glob('**/*.md', recursive=True):
-        print(f'Re-formatting links in "{noteFile}" ...')
+    for noteFile in glob.iglob('**/*.md', recursive=True):
+        print(f'Reformatting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
             page = f.read()
-        page = re.sub('\[(.*)\]\((.+)\)', '[[\\2]]', page)
+        page = re.sub('\[.*\]\((.+)\)', '[[\\1]]', page)
         page = page.replace('[[./', '[[')
         with open(noteFile, 'w', encoding='utf-8') as f:
             f.write(page)
@@ -182,10 +192,10 @@ def main():
     print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
     if RENAME_PAGES:
         rename_pages()
-    if CHANGE_HEADING_STYLE:
-        change_heading_style()
     if REMOVE_FIRST_LINE:
         remove_first_line()
+    if CHANGE_HEADING_STYLE:
+        change_heading_style()
     if REFORMAT_LINKS:
         reformat_links()
     print('\nDone.')

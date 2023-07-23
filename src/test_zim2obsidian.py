@@ -11,7 +11,8 @@ from shutil import copyfile
 import zim2obsidian
 
 TEST_DIR = '../test/workdir'
-TEST_FILE = 'Home.md'
+TEST_INPUT = 'Junk.md'
+TEST_OUTPUT = 'Home.md'
 ORIGINAL_FILE = '../data/original.md'
 REFERENCE_FILE = '../data/processed.md'
 
@@ -39,14 +40,14 @@ class SinglePageTest(unittest.TestCase):
     """Test case: convert a single page exported by zim."""
 
     def setUp(self):
-        copyfile(ORIGINAL_FILE, TEST_FILE)
+        copyfile(ORIGINAL_FILE, TEST_INPUT)
 
     def test_zim2obsidian(self):
         zim2obsidian.main()
-        self.assertEqual(read_file(TEST_FILE), read_file(REFERENCE_FILE))
+        self.assertEqual(read_file(TEST_OUTPUT), read_file(REFERENCE_FILE))
 
     def tearDown(self):
-        os.remove(TEST_FILE)
+        os.remove(TEST_OUTPUT)
 
 
 if __name__ == "__main__":
