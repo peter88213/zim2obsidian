@@ -47,6 +47,7 @@ v0.6.5 - Make the change from v0.6.4 also work on non-Windows systems.
 v0.6.6 - Secure the link adjustment against mistakes.
 v0.7.0 - Convert highlighting.
 v0.8.0 - Convert checkboxes.
+v0.8.1 - Add messages for checkbox replacements.
 """
 
 import glob
@@ -120,7 +121,7 @@ def rename_pages():
             links = re.findall(f'\[.+(\]\(.*{noteName}\))', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, noteNames[noteName])
-                print(f'- Replacing {oldLink} with {newLink}')
+                print(f'- Replacing {oldLink} with {newLink} ...')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
         if hasChanged:
@@ -190,6 +191,7 @@ def change_md_style():
                 # Convert checkboxes
                 for c in CHECKBOXES:
                     if line.startswith(c):
+                        print(f'- Replacing checkbox {CHECKBOXES[c]} ...')
                         line = f'{CHECKBOXES[c]}{line[3:]}'
 
                 # Convert highlighting.
