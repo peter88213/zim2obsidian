@@ -11,6 +11,11 @@ Second level heading
 
 blabla __highlighted__ blabla __highlighted__.
 
+* ☐ Unchecked
+* ☑ Checked
+* ☒ Cross-checked
+* ▷ Arrow right
+* ◁ Arrow left
 
 *****
 

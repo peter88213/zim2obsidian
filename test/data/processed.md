@@ -8,6 +8,11 @@ blabla
 
 blabla ==highlighted== blabla ==highlighted==.
 
+- [ ] Unchecked
+- [x] Checked
+- [c] Cross-checked
+- [>] Arrow right
+- [<] Arrow left
 
 ---
 

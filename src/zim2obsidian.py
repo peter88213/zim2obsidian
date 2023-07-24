@@ -46,6 +46,7 @@ v0.6.4 - Do not rename a page if another page with the new filename exists.
 v0.6.5 - Make the change from v0.6.4 also work on non-Windows systems.
 v0.6.6 - Secure the link adjustment against mistakes.
 v0.7.0 - Convert highlighting.
+v0.8.0 - Convert checkboxes.
 """
 
 import glob
@@ -145,7 +146,17 @@ def change_md_style():
     - Replace Setext-style headings with Atx-style headings
     - Convert rulers.
     - Convert highlighting.
+    - Convert checkboxes.
     """
+    CHECKBOXES = {
+                 '* ☐': '- [ ]',
+                 '* ☑': '- [x]',
+                 '* ☒': '- [c]',
+                 '* ▷': '- [>]',
+                 '* ◁': '- [<]',
+                  }
+    # replacement dictionary; key: Zim checkbox, value: Obsidian checkbox
+
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting headings in "{noteFile}" ...')
@@ -175,8 +186,16 @@ def change_md_style():
             else:
                 if previousLine is not None:
                     newLines.append(previousLine)
+
+                # Convert checkboxes
+                for c in CHECKBOXES:
+                    if line.startswith(c):
+                        line = f'{CHECKBOXES[c]}{line[3:]}'
+
                 # Convert highlighting.
-                previousLine = re.sub('__(.+?)__', '==\\1==', line)
+                line = re.sub('__(.+?)__', '==\\1==', line)
+
+                previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"
         if previousLine is not None:
             newLines.append(previousLine)
