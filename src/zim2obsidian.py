@@ -1,11 +1,8 @@
 #!/usr/bin/python3
 """Post-process Zim Markdown export for use with Obsidian.
 
-- Loops through all subdirectories of a Zim notebook Markdown export.
-- Optionally renames pages according to the names given by the top first level heading.
-- Optionally removes each note's first line. 
-- Optionally converts several Markdown to Obsidian style, e.g. headings, highlighting, checkboxes.
-- Optionally converts internal links to other pages to Obsidian style.
+Loops through all subdirectories of a Zim notebook Markdown export and processes the pages.
+For Details, see the README page on GitHub.
 
 Usage:
 
@@ -75,7 +72,7 @@ def rename_pages():
     Note: Make sure to call this procedure before the page's first lines are removed.
     """
 
-    # First run: Get the new note file names.
+    # First run: Rename the pages and collect the new filenames.
 
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
     # set of characters that filenames cannot contain
@@ -188,7 +185,7 @@ def change_md_style():
                 if previousLine is not None:
                     newLines.append(previousLine)
 
-                # Convert checkboxes
+                # Convert checkboxes in To-Do lists.
                 for c in CHECKBOXES:
                     if line.startswith(c):
                         print(f'- Replacing checkbox {CHECKBOXES[c]} ...')
