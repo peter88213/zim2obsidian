@@ -47,6 +47,7 @@ v0.8.0 - Convert checkboxes.
 v0.8.1 - Add messages for checkbox replacements.
 v0.9.0 - Convert tags.
 v0.10.0 - Convert checkboxes that are not in a list.
+v0.10.1 - Fix a bug where changes in pages without first or second level headings are not saved.
 """
 
 import glob
@@ -161,7 +162,6 @@ def change_md_style():
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting headings in "{noteFile}" ...')
-        hasChanged = False
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.read().split('\n')
         newLines = []
@@ -173,17 +173,14 @@ def change_md_style():
             if line.startswith('=') and line.count('=') == len(line):
                 print(f'- Converting 1st level heading "{previousLine}" ...')
                 previousLine = f'# {previousLine}'
-                hasChanged = True
             elif line.startswith('-') and line.count('-') == len(line):
                 print(f'- Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
-                hasChanged = True
             elif line.startswith('*') and line.count('*') == len(line):
                 print('- Converting horizontal ruler ...')
                 if previousLine is not None:
                     newLines.append(previousLine)
                 previousLine = '---'
-                hasChanged = True
             else:
                 if previousLine is not None:
                     newLines.append(previousLine)
@@ -206,9 +203,8 @@ def change_md_style():
             newLines.append(previousLine)
             # adding the very last line to the list of processed lines
 
-        if hasChanged:
-            with open(noteFile, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(newLines))
+        with open(noteFile, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(newLines))
 
 
 def reformat_links():
