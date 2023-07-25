@@ -46,6 +46,7 @@ v0.7.0 - Convert highlighting.
 v0.8.0 - Convert checkboxes.
 v0.8.1 - Add messages for checkbox replacements.
 v0.9.0 - Convert tags.
+v0.10.0 - Convert checkboxes that are not in a list.
 """
 
 import glob
@@ -146,13 +147,14 @@ def change_md_style():
     - Convert rulers.
     - Convert highlighting.
     - Convert checkboxes.
+    - Convert tags.
     """
     CHECKBOXES = {
-                 '* ☐': '- [ ]',
-                 '* ☑': '- [x]',
-                 '* ☒': '- [c]',
-                 '* ▷': '- [>]',
-                 '* ◁': '- [<]',
+                 '☐': '- [ ]',
+                 '☑': '- [x]',
+                 '☒': '- [c]',
+                 '▷': '- [>]',
+                 '◁': '- [<]',
                   }
     # replacement dictionary; key: Zim checkbox, value: Obsidian checkbox
 
@@ -186,11 +188,9 @@ def change_md_style():
                 if previousLine is not None:
                     newLines.append(previousLine)
 
-                # Convert checkboxes in To-Do lists.
+                # Convert checkboxes.
                 for c in CHECKBOXES:
-                    if line.startswith(c):
-                        print(f'- Replacing checkbox {CHECKBOXES[c]} ...')
-                        line = f'{CHECKBOXES[c]}{line[3:]}'
+                    line = re.sub(f'(\* )*{c}', CHECKBOXES[c], line)
 
                 # Convert highlighting.
                 line = re.sub('__(.+?)__', '==\\1==', line)

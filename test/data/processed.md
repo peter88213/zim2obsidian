@@ -13,6 +13,7 @@ blabla ==highlighted== blabla ==highlighted==.
 - [c] Cross-checked
 - [>] Arrow right
 - [<] Arrow left
+&emsp;- [ ] Unchecked and indented
 
 ---
 

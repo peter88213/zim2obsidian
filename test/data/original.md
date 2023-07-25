@@ -16,6 +16,7 @@ blabla __highlighted__ blabla __highlighted__.
 * ☒ Cross-checked
 * ▷ Arrow right
 * ◁ Arrow left
+&emsp;☐ Unchecked and indented
 
 *****
 

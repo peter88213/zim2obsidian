@@ -13,7 +13,7 @@ Loops through all subdirectories of a *Zim* notebook Markdown export.
     - Replaces Setext-style headers with Atx-style headers.
     - Converts horizontal rulers.
     - Converts highlighting.
-    - Converts checkboxes in To-Do lists.
+    - Converts checkboxes.
     - Converts tags.
 
 ## Requirements
