@@ -14,6 +14,7 @@ Loops through all subdirectories of a *Zim* notebook Markdown export.
     - Converts horizontal rulers.
     - Converts highlighting.
     - Converts checkboxes in To-Do lists.
+    - converts tags.
 
 ## Requirements
 

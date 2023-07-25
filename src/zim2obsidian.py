@@ -45,6 +45,7 @@ v0.6.6 - Secure the link adjustment against mistakes.
 v0.7.0 - Convert highlighting.
 v0.8.0 - Convert checkboxes.
 v0.8.1 - Add messages for checkbox replacements.
+v0.9.0 - Convert tags.
 """
 
 import glob
@@ -193,6 +194,12 @@ def change_md_style():
 
                 # Convert highlighting.
                 line = re.sub('__(.+?)__', '==\\1==', line)
+
+                # Convert tags.
+                if '@' in line:
+                    print('Converting tags ...')
+                    line = re.sub('^@(\S+?)', ' #\\1', line)
+                    line = re.sub('@(\S+?)', '#\\1', line)
 
                 previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"

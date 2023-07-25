@@ -19,6 +19,9 @@ blabla __highlighted__ blabla __highlighted__.
 
 *****
 
+@Tag1 @Tag2 @Tag3
+@ @
+@
 
 ### Third level heading
 
