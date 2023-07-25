@@ -16,9 +16,10 @@ blabla ==highlighted== blabla ==highlighted==.
 
 ---
 
- #Tag1 #Tag2 #Tag3
+ #Tag1  #Tag2  #Tag3
 @ @
 @
+ #Tag4 #Tag5
 
 ### Third level heading
 

@@ -197,9 +197,8 @@ def change_md_style():
 
                 # Convert tags.
                 if '@' in line:
-                    print('Converting tags ...')
-                    line = re.sub('^@(\S+?)', ' #\\1', line)
-                    line = re.sub('@(\S+?)', '#\\1', line)
+                    print('- Converting tags ...')
+                    line = re.sub('@(\S+?)', ' #\\1', line)
 
                 previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"
