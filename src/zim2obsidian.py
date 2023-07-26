@@ -48,6 +48,7 @@ v0.8.1 - Add messages for checkbox replacements.
 v0.9.0 - Convert tags.
 v0.10.0 - Convert checkboxes that are not in a list.
 v0.10.1 - Fix a bug where changes in pages without first or second level headings are not saved.
+v0.10.2 - Change the line breaks to Unix style.
 """
 
 import glob
