@@ -49,6 +49,7 @@ v0.9.0 - Convert tags.
 v0.10.0 - Convert checkboxes that are not in a list.
 v0.10.1 - Fix a bug where changes in pages without first or second level headings are not saved.
 v0.10.2 - Change the line breaks to Unix style.
+v0.10.3 - No extra space before the Obsidian tag.
 """
 
 import glob
@@ -196,7 +197,7 @@ def change_md_style():
                 # Convert tags.
                 if '@' in line:
                     print('- Converting tags ...')
-                    line = re.sub('@(\S+?)', ' #\\1', line)
+                    line = re.sub('@(\S+?)', '#\\1', line)
 
                 previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"
