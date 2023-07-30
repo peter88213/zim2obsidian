@@ -15,6 +15,7 @@ TEST_INPUT = 'Junk.md'
 TEST_OUTPUT = 'Home.md'
 ORIGINAL_FILE = '../data/original.md'
 REFERENCE_FILE = '../data/processed.md'
+WIKILINKS_FILE = '../data/wikilinks.md'
 
 os.makedirs(TEST_DIR, exist_ok=True)
 os.chdir(TEST_DIR)
@@ -35,6 +36,21 @@ class SinglePageTest(unittest.TestCase):
     def test_zim2obsidian(self):
         zim2obsidian.main()
         self.assertEqual(read_file(TEST_OUTPUT), read_file(REFERENCE_FILE))
+
+    def tearDown(self):
+        os.remove(TEST_OUTPUT)
+
+
+class WiliLinksTest(unittest.TestCase):
+    """Test case: convert a single page exported by zim."""
+
+    def setUp(self):
+        copyfile(ORIGINAL_FILE, TEST_INPUT)
+
+    def test_zim2obsidian(self):
+        zim2obsidian.REFORMAT_LINKS = True
+        zim2obsidian.main()
+        self.assertEqual(read_file(TEST_OUTPUT), read_file(WIKILINKS_FILE))
 
     def tearDown(self):
         os.remove(TEST_OUTPUT)

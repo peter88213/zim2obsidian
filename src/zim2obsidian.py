@@ -51,6 +51,7 @@ v0.10.1 - Fix a bug where changes in pages without first or second level heading
 v0.10.2 - Change the line breaks to Unix style.
 v0.10.3 - No extra space before the Obsidian tag.
 v0.10.4 - Rework reformat_links() to keep the custom link names.
+v0.10.5 - Disable the conversion to wikilinks by default.
 """
 
 import glob
@@ -68,8 +69,9 @@ REMOVE_FIRST_LINE = True
 CHANGE_MARKDOWN_STYLE = True
 # If True, convert Markdown formatting to Obsidian style.
 
-REFORMAT_LINKS = True
-# If True, change Markdown-style links to Obsidian-style links.
+REFORMAT_LINKS = False
+# If True, change Markdown links to wikilinks.
+# This feature is experimental and disabled by default.
 
 
 def rename_pages():
@@ -211,8 +213,10 @@ def change_md_style():
 
 
 def reformat_links():
-    """Change Markdown-style links to Obsidian-style links."""
-    # Todo:
+    """Change change Markdown links to wikilinks.
+    
+    Note: this is experimental and disabled by default.
+    """
 
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):

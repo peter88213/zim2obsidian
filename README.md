@@ -8,7 +8,7 @@ Loops through all subdirectories of a *Zim* notebook Markdown export.
 
 - Renames pages according to the names given by the top first level heading.
 - Removes each note's first line. 
-- Converts links from standard Markdown style to Obsidian style (optional).
+- Converts Makrdown links to wikilinks (optional).
 - Converts several Markdown formattings to Obsidian style:
     - Replaces Setext-style headers with Atx-style headers.
     - Converts horizontal rulers.

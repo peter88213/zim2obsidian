@@ -4,8 +4,8 @@ blabla
 
 ## Second level heading
 
-[](./Some dir/Some page.md)
-[Custom linkname](./Some dir/Another page.md)
+[[Some dir/Some page.md]]
+[[Some dir/Another page.md|Custom linkname]]
 
 blabla ==highlighted== blabla ==highlighted==.
 
