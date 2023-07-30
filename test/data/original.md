@@ -7,7 +7,8 @@ blabla
 Second level heading
 --------------------
 
-[+Some page](./Some dir/Some page.md)
+[](./Some dir/Some page.md)
+[Custom linkname](./Some dir/Another page.md)
 
 blabla __highlighted__ blabla __highlighted__.
 

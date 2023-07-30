@@ -5,6 +5,7 @@ blabla
 ## Second level heading
 
 [[Some dir/Some page.md]]
+[[Some dir/Another page.md|Custom linkname]]
 
 blabla ==highlighted== blabla ==highlighted==.
 

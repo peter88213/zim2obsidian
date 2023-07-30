@@ -50,6 +50,7 @@ v0.10.0 - Convert checkboxes that are not in a list.
 v0.10.1 - Fix a bug where changes in pages without first or second level headings are not saved.
 v0.10.2 - Change the line breaks to Unix style.
 v0.10.3 - No extra space before the Obsidian tag.
+v0.10.4 - Rework reformat_links() to keep the custom link names.
 """
 
 import glob
@@ -211,15 +212,21 @@ def change_md_style():
 
 def reformat_links():
     """Change Markdown-style links to Obsidian-style links."""
+    # Todo:
+
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
-            page = f.read()
-        page = re.sub('\[.*\]\((.+)\)', '[[\\1]]', page)
-        page = page.replace('[[./', '[[')
+            lines = f.readlines()
+        newLines = []
+        for line in lines:
+            newLine = re.sub('\[(.+?)\]\((.+?)\)', '[[\\2|\\1]]', line)
+            newLine = re.sub('\[]\((.+?)\)', '[[\\1]]', newLine)
+            newLine = newLine.replace('[[./', '[[')
+            newLines.append(newLine)
         with open(noteFile, 'w', encoding='utf-8') as f:
-            f.write(page)
+            f.writelines(newLines)
 
 
 def main():
