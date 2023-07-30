@@ -213,7 +213,7 @@ def change_md_style():
 
 
 def reformat_links():
-    """Change change Markdown links to wikilinks.
+    """Change Markdown links to wikilinks.
     
     Note: this is experimental and disabled by default.
     """
