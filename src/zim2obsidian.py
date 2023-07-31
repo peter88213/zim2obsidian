@@ -54,11 +54,13 @@ v0.10.4 - Rework reformat_links() to keep the custom link names.
 v0.10.5 - Disable the conversion to wikilinks by default.
 v0.11.0 - Escape spaces when renaming links.
           Remove leading "./" when renaming links.
+v0.11.1 - Use a library function for escaping spaces in links.
 """
 
 import glob
 import os
 import re
+from urllib.request import pathname2url
 
 # Configuration (to be changed by the user).
 
@@ -127,7 +129,7 @@ def rename_pages():
         for noteName in noteNames:
             links = re.findall(f'\[.+(\]\(.*{noteName}\))', page)
             for oldLink in links:
-                newLink = oldLink.replace(noteName, noteNames[noteName].replace(' ', '%20')).replace('](./', '](')
+                newLink = oldLink.replace(noteName, pathname2url(noteNames[noteName])).replace('](./', '](')
                 print(f'- Replacing {oldLink} with {newLink} ...')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
