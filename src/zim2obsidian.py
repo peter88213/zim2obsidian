@@ -52,6 +52,8 @@ v0.10.2 - Change the line breaks to Unix style.
 v0.10.3 - No extra space before the Obsidian tag.
 v0.10.4 - Rework reformat_links() to keep the custom link names.
 v0.10.5 - Disable the conversion to wikilinks by default.
+v0.11.0 - Escape spaces when renaming links.
+          Remove leading "./" when renaming links.
 """
 
 import glob
@@ -96,7 +98,7 @@ def rename_pages():
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
-        if lines[0].startswith('# '):
+        if lines and lines[0].startswith('# '):
             # Generate a new file name from the note's heading.
             newName = f'{lines[0][2:].strip()}.md'
 
@@ -125,7 +127,7 @@ def rename_pages():
         for noteName in noteNames:
             links = re.findall(f'\[.+(\]\(.*{noteName}\))', page)
             for oldLink in links:
-                newLink = oldLink.replace(noteName, noteNames[noteName])
+                newLink = oldLink.replace(noteName, noteNames[noteName].replace(' ', '%20')).replace('](./', '](')
                 print(f'- Replacing {oldLink} with {newLink} ...')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
@@ -141,9 +143,10 @@ def remove_first_line():
         print(f'Removing the first line of "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        del lines[0]
-        with open(noteFile, 'w', encoding='utf-8') as f:
-            f.writelines(lines)
+        if lines:
+            del lines[0]
+            with open(noteFile, 'w', encoding='utf-8') as f:
+                f.writelines(lines)
 
 
 def change_md_style():

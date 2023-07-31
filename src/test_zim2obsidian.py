@@ -7,12 +7,14 @@ Published under the MIT License (https://opensource.org/licenses/mit-license.php
 """
 import unittest
 import os
+import glob
 from shutil import copyfile
 import zim2obsidian
 
 TEST_DIR = '../test/workdir'
 TEST_INPUT = 'Junk.md'
 TEST_OUTPUT = 'Home.md'
+SUBPAGE = 'subpage.md'
 ORIGINAL_FILE = '../data/original.md'
 REFERENCE_FILE = '../data/processed.md'
 WIKILINKS_FILE = '../data/wikilinks.md'
@@ -32,13 +34,15 @@ class SinglePageTest(unittest.TestCase):
 
     def setUp(self):
         copyfile(ORIGINAL_FILE, TEST_INPUT)
+        copyfile(f'../data/{SUBPAGE}', f'../workdir/{SUBPAGE}')
 
     def test_zim2obsidian(self):
         zim2obsidian.main()
         self.assertEqual(read_file(TEST_OUTPUT), read_file(REFERENCE_FILE))
 
     def tearDown(self):
-        os.remove(TEST_OUTPUT)
+        for testFile in glob.iglob('**/*.md', recursive=True):
+            os.remove(testFile)
 
 
 class WiliLinksTest(unittest.TestCase):
@@ -46,6 +50,7 @@ class WiliLinksTest(unittest.TestCase):
 
     def setUp(self):
         copyfile(ORIGINAL_FILE, TEST_INPUT)
+        copyfile(f'../data/{SUBPAGE}', f'../workdir/{SUBPAGE}')
 
     def test_zim2obsidian(self):
         zim2obsidian.REFORMAT_LINKS = True
@@ -53,7 +58,8 @@ class WiliLinksTest(unittest.TestCase):
         self.assertEqual(read_file(TEST_OUTPUT), read_file(WIKILINKS_FILE))
 
     def tearDown(self):
-        os.remove(TEST_OUTPUT)
+        for testFile in glob.iglob('**/*.md', recursive=True):
+            os.remove(testFile)
 
 
 if __name__ == "__main__":

@@ -2,9 +2,12 @@
 
 blabla
 
+[Next page](This%20is%20a%20sub%20page.md)
+
 ## Second level heading
 
 [](./Some dir/Some page.md)
+
 [Custom linkname](./Some dir/Another page.md)
 
 blabla ==highlighted== blabla ==highlighted==.
