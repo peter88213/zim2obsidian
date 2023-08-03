@@ -55,6 +55,7 @@ v0.10.5 - Disable the conversion to wikilinks by default.
 v0.11.0 - Escape spaces when renaming links.
           Remove leading "./" when renaming links.
 v0.11.1 - Use a library function for escaping spaces in links.
+v0.11.2 - Refactor the checkbox conversion code.
 """
 
 import glob
@@ -84,7 +85,7 @@ def rename_pages():
     Note: Make sure to call this procedure before the page's first lines are removed.
     """
 
-    # First run: Rename the pages and collect the new filenames.
+    #--- First run: Rename the pages and collect the new filenames.
 
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
     # set of characters that filenames cannot contain
@@ -118,7 +119,7 @@ def rename_pages():
                 else:
                     print(f'Cannot rename "{noteFile}" to "{newFile}" ...')
 
-    # Second run: Adjust internal links.
+    #--- Second run: Adjust internal links.
 
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
@@ -161,11 +162,11 @@ def change_md_style():
     - Convert tags.
     """
     CHECKBOXES = {
-                 '☐': '- [ ]',
-                 '☑': '- [x]',
-                 '☒': '- [c]',
-                 '▷': '- [>]',
-                 '◁': '- [<]',
+                 '☐': '[ ]',
+                 '☑': '[x]',
+                 '☒': '[c]',
+                 '▷': '[>]',
+                 '◁': '[<]',
                   }
     # replacement dictionary; key: Zim checkbox, value: Obsidian checkbox
 
@@ -181,12 +182,18 @@ def change_md_style():
 
         for  line in lines:
             if line.startswith('=') and line.count('=') == len(line):
+
+                #--- Convert 1st level heading.
                 print(f'- Converting 1st level heading "{previousLine}" ...')
                 previousLine = f'# {previousLine}'
             elif line.startswith('-') and line.count('-') == len(line):
+
+                #--- Convert 2nd level heading.
                 print(f'- Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
             elif line.startswith('*') and line.count('*') == len(line):
+
+                #--- Convert horizontal ruler.
                 print('- Converting horizontal ruler ...')
                 if previousLine is not None:
                     newLines.append(previousLine)
@@ -195,14 +202,14 @@ def change_md_style():
                 if previousLine is not None:
                     newLines.append(previousLine)
 
-                # Convert checkboxes.
+                #--- Convert checkboxes.
                 for c in CHECKBOXES:
-                    line = re.sub(f'(\* )*{c}', CHECKBOXES[c], line)
+                    line = re.sub(f'(\* )*{c}', f'- {CHECKBOXES[c]}', line)
 
-                # Convert highlighting.
+                #--- Convert highlighting.
                 line = re.sub('__(.+?)__', '==\\1==', line)
 
-                # Convert tags.
+                #--- Convert tags.
                 if '@' in line:
                     print('- Converting tags ...')
                     line = re.sub('@(\S+?)', '#\\1', line)
