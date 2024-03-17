@@ -188,12 +188,9 @@ def change_md_style():
 
         for  line in lines:
             if line.startswith(CODE_BLOCK_MARKER):
+                isCodeblock = not isCodeblock
+                # toggling the "code block mode"
 
-                #--- Toggle the "code block mode".
-                if isCodeblock:
-                    isCodeblock = False
-                else:
-                   isCodeblock = True
             elif line.startswith('=') and line.count('=') == len(line):
 
                 #--- Convert 1st level heading.
