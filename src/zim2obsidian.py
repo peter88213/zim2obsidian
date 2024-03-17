@@ -56,6 +56,7 @@ v0.11.0 - Escape spaces when renaming links.
           Remove leading "./" when renaming links.
 v0.11.1 - Use a library function for escaping spaces in links.
 v0.11.2 - Refactor the checkbox conversion code.
+v0.11.3 - Bugfix: Exclude code blocks from zim2obsidian formatting
 """
 
 import glob
@@ -180,8 +181,16 @@ def change_md_style():
         # A first or second level heading is reformatted depending on the line that follows it.
         # For this, the previous line must be temporarily stored for processing.
 
+        CODE_BLOCK_MARKER = '´´´'
+        isCodeblock = False
+
         for  line in lines:
-            if line.startswith('=') and line.count('=') == len(line):
+            if line.startswith(CODE_BLOCK_MARKER):
+                if isCodeblock:
+                    isCodeblock = False
+                else:
+                   isCodeblock = True
+            elif line.startswith('=') and line.count('=') == len(line):
 
                 #--- Convert 1st level heading.
                 print(f'- Converting 1st level heading "{previousLine}" ...')
@@ -202,17 +211,19 @@ def change_md_style():
                 if previousLine is not None:
                     newLines.append(previousLine)
 
-                #--- Convert checkboxes.
-                for c in CHECKBOXES:
-                    line = re.sub(f'(\* )*{c}', f'- {CHECKBOXES[c]}', line)
+                if not isCodeblock:
 
-                #--- Convert highlighting.
-                line = re.sub('__(.+?)__', '==\\1==', line)
+                    #--- Convert checkboxes.
+                    for c in CHECKBOXES:
+                        line = re.sub(f'(\* )*{c}', f'- {CHECKBOXES[c]}', line)
 
-                #--- Convert tags.
-                if '@' in line:
-                    print('- Converting tags ...')
-                    line = re.sub('@(\S+?)', '#\\1', line)
+                    #--- Convert highlighting.
+                    line = re.sub('__(.+?)__', '==\\1==', line)
+
+                    #--- Convert tags.
+                    if '@' in line:
+                        print('- Converting tags ...')
+                        line = re.sub('@(\S+?)', '#\\1', line)
 
                 previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"
