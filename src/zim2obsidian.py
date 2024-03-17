@@ -170,6 +170,8 @@ def change_md_style():
                  '◁': '[<]',
                   }
     # replacement dictionary; key: Zim checkbox, value: Obsidian checkbox
+    CODE_BLOCK_MARKER = '´´´'
+    # lines that start with this string will toggle the "code block mode"
 
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
@@ -181,11 +183,13 @@ def change_md_style():
         # A first or second level heading is reformatted depending on the line that follows it.
         # For this, the previous line must be temporarily stored for processing.
 
-        CODE_BLOCK_MARKER = '´´´'
         isCodeblock = False
+        # "code block mode" indicator
 
         for  line in lines:
             if line.startswith(CODE_BLOCK_MARKER):
+
+                #--- Toggle the "code block mode".
                 if isCodeblock:
                     isCodeblock = False
                 else:
