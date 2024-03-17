@@ -57,6 +57,7 @@ v0.11.0 - Escape spaces when renaming links.
 v0.11.1 - Use a library function for escaping spaces in links.
 v0.11.2 - Refactor the checkbox conversion code.
 v0.11.3 - Bugfix: Exclude code blocks from zim2obsidian formatting
+v0.11.4 - Fix bugs that show up at testing. Tests now o.k.
 """
 
 import glob
@@ -170,7 +171,7 @@ def change_md_style():
                  '◁': '[<]',
                   }
     # replacement dictionary; key: Zim checkbox, value: Obsidian checkbox
-    CODE_BLOCK_MARKER = '´´´'
+    CODE_BLOCK_MARKER = '```'
     # lines that start with this string will toggle the "code block mode"
 
     # Loop through all files with the ".md" extension, including subdirectories.
@@ -187,11 +188,8 @@ def change_md_style():
         # "code block mode" indicator
 
         for  line in lines:
-            if line.startswith(CODE_BLOCK_MARKER):
-                isCodeblock = not isCodeblock
-                # toggling the "code block mode"
 
-            elif line.startswith('=') and line.count('=') == len(line):
+            if line.startswith('=') and line.count('=') == len(line):
 
                 #--- Convert 1st level heading.
                 print(f'- Converting 1st level heading "{previousLine}" ...')
@@ -209,6 +207,10 @@ def change_md_style():
                     newLines.append(previousLine)
                 previousLine = '---'
             else:
+                if line.startswith(CODE_BLOCK_MARKER):
+                    isCodeblock = not isCodeblock
+                    # toggling the "code block mode"
+
                 if previousLine is not None:
                     newLines.append(previousLine)
 
