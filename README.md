@@ -58,7 +58,7 @@ Inline code markup is not supported by regular *Zim*.
 
 However, you can enclose inline code with backticks in *Zim*, and
 "fence" code blocks with three backticks, as usual in GitHub flavored markdown. 
-Then you can call *zim2obsidian.py" with the `--backticks` argument. 
+Then you can call *zim2obsidian.py* with the `--backticks` argument. 
 The script then keeps the backticks-enclosed passages verbatim. 
 Leading tabs are passed through without adding code block markers.
  
