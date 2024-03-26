@@ -36,13 +36,13 @@ Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/mar
 ## Usage of the zim2obsidian.py script
 
 ```
-zim2obsidian.py [-h] [--backticks]
+zim2obsidian.py [-h] [-b]
 
 Convert Zim Markdown export to Obsidian
 
 options:
   -h, --help   show a help message and exit
-  --backticks  verbatim blocks and inline code are marked with backticks
+  -b, --backticks  verbatim blocks and inline code are marked with backticks
 
 ```
 

@@ -11,13 +11,13 @@ Workflow:
 3. Copy this Python script into the export root directory. 
 4. Start zim2obsidian.py by double clicking on it or from the console. 
 
-usage: zim2obsidian.py [-h] [--backticks]
+usage: zim2obsidian.py [-h] [-b]
 
 Convert Zim Markdown export to Obsidian
 
 options:
   -h, --help   show a help message and exit
-  --backticks  verbatim blocks and inline code are marked with backticks
+  -b, --backticks  verbatim blocks and inline code are marked with backticks
 
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
@@ -70,6 +70,7 @@ v0.11.5 - Exclude inline code from Markdown conversion.
 v0.11.6 - Refactor the code.
 v0.12.0 - Convert "verbatim" lines as exported by Zim. 
 v0.13.0 - Make the "backticks" code conversion an option.
+v0.13.1 - Provide an abbreviation for the "backticks" argument.
 """
 
 import glob
@@ -167,11 +168,14 @@ def remove_first_line():
 def change_md_style(backticks=False):
     """Convert Markdown formatting to Obsidian style.
     
+    Optional arguments:
+        backticks: bool -- If True, verbatim blocks and inline code are marked with backticks.
+        
     - Replace Setext-style headings with Atx-style headings
     - Convert rulers.
     - Convert highlighting.
     - Convert checkboxes.
-    - Convert tags.
+    - Convert tags.    
     """
     CHECKBOXES = {
                  '☐': '[ ]',
@@ -225,11 +229,13 @@ def change_md_style(backticks=False):
                 #--- Convert 1st level heading.
                 print(f'- Converting 1st level heading "{previousLine}" ...')
                 previousLine = f'# {previousLine}'
+
             elif line.startswith('-') and line.count('-') == len(line):
 
                 #--- Convert 2nd level heading.
                 print(f'- Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
+
             elif line.startswith('*') and line.count('*') == len(line):
 
                 #--- Convert horizontal ruler.
@@ -319,6 +325,11 @@ def reformat_links():
 
 
 def main(backticks=False):
+    """Run the converter
+    
+    Optional arguments:
+        backticks: bool -- If True, verbatim blocks and inline code are marked with backticks.
+    """
     print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
     if RENAME_PAGES:
         rename_pages()
@@ -335,9 +346,12 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(
         description='Convert Zim Markdown export to Obsidian',
-        epilog='')
-    parser.add_argument('--backticks',
-                        action="store_true",
-                        help='verbatim blocks and inline code are marked with backticks')
+        epilog=''
+        )
+    parser.add_argument(
+        '-b', '--backticks',
+        action="store_true",
+        help='verbatim blocks and inline code are marked with backticks'
+        )
     args = parser.parse_args()
     main(args.backticks)
