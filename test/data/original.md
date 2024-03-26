@@ -30,13 +30,7 @@ blabla __highlighted__ blabla __highlighted__.
 @Tag4@Tag5
 @@Tag6
 
-This is a line with `@inline raw code ▷ 1` and `@inline raw code 2`
-`@inline raw code 3` begins the line.
-@This line also has `@inline raw code 4` for testing.
-
-```
-   @This is to be raw code
-```
+	@This is to be raw code
 @Tag7
 
 ### Third level heading

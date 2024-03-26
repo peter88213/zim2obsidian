@@ -60,6 +60,7 @@ v0.11.3 - Bugfix: Exclude code blocks from zim2obsidian formatting
 v0.11.4 - Fix bugs that show up at testing. Tests now o.k.
 v0.11.5 - Exclude inline code from Markdown conversion.
 v0.11.6 - Refactor the code.
+v0.12.0 - Convert "verbatim" lines as exported by Zim. 
 """
 
 import glob
@@ -176,9 +177,6 @@ def change_md_style():
     CODE_BLOCK_MARKER = '```'
     # lines that start with this string will toggle the "code block mode"
 
-    INLINE_CODE_MARKER = '`'
-    # inline code is enclosed with this string
-
     def convert_md(text):
         """Return a converted string."""
 
@@ -229,28 +227,22 @@ def change_md_style():
                     newLines.append(previousLine)
                 previousLine = '---'
             else:
-                if line.startswith(CODE_BLOCK_MARKER):
-                    isCodeblock = not isCodeblock
-                    # toggling the "code block mode"
-
                 if previousLine is not None:
                     newLines.append(previousLine)
 
                 if not isCodeblock:
+                    if line.startswith('\t'):
+                        # indented line means codeblock
+                        newLines.append(CODE_BLOCK_MARKER)
+                        # opening an Obsidian code block
+                        isCodeblock = True
+                elif not line.startswith('\t'):
+                        newLines.append(CODE_BLOCK_MARKER)
+                        # closing an Obsidian code block
+                        isCodeblock = False
 
-                    # Exclude inline code from conversion.
-                    processedChunks = []
-                    chunks = line.split(INLINE_CODE_MARKER)
-                    for i, chunk in enumerate(chunks):
-                        if i % 2:
-                            processedChunks.append(chunk)
-                            # chunk is considered inline code
-                        else:
-
-                            #--- Convert regular Markdown text.
-                            processedChunks.append(convert_md(chunk))
-
-                    line = INLINE_CODE_MARKER.join(processedChunks)
+                if not isCodeblock:
+                    line = convert_md(line)
 
                 previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"
