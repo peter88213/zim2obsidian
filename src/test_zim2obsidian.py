@@ -18,6 +18,7 @@ SUBPAGE = 'subpage.md'
 ORIGINAL_FILE = '../data/original.md'
 REFERENCE_FILE = '../data/processed.md'
 WIKILINKS_FILE = '../data/wikilinks.md'
+BACKTICKS_FILE = '../data/backticks.md'
 
 os.makedirs(TEST_DIR, exist_ok=True)
 os.chdir(TEST_DIR)
@@ -39,6 +40,22 @@ class SinglePageTest(unittest.TestCase):
     def test_zim2obsidian(self):
         zim2obsidian.main()
         self.assertEqual(read_file(TEST_OUTPUT), read_file(REFERENCE_FILE))
+
+    def tearDown(self):
+        for testFile in glob.iglob('**/*.md', recursive=True):
+            os.remove(testFile)
+
+
+class BackticksTest(unittest.TestCase):
+    """Test case: convert a single page exported by zim with backticks as code markers."""
+
+    def setUp(self):
+        copyfile(ORIGINAL_FILE, TEST_INPUT)
+        copyfile(f'../data/{SUBPAGE}', f'../workdir/{SUBPAGE}')
+
+    def test_zim2obsidian(self):
+        zim2obsidian.main(backticks=True)
+        self.assertEqual(read_file(TEST_OUTPUT), read_file(BACKTICKS_FILE))
 
     def tearDown(self):
         for testFile in glob.iglob('**/*.md', recursive=True):

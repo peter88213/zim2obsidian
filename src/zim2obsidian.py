@@ -4,12 +4,20 @@
 Loops through all subdirectories of a Zim notebook Markdown export and processes the pages.
 For Details, see the README page on GitHub.
 
-Usage:
+Workflow:
 
 1. Have Zim export the Notebook to Markdown (Export each page to a separate file). 
 2. Make sure the Markdown files have the ".md" extension. If not, run markdown2md.py first.
 3. Copy this Python script into the export root directory. 
-4. Start it by double clicking on it or from the console. 
+4. Start zim2obsidian.py by double clicking on it or from the console. 
+
+usage: zim2obsidian.py [-h] [--backticks]
+
+Convert Zim Markdown export to Obsidian
+
+options:
+  -h, --help   show a help message and exit
+  --backticks  verbatim blocks and inline code are marked with backticks
 
 Requires Python 3.6+
 Copyright (c) 2023 Peter Triesberger
@@ -61,6 +69,7 @@ v0.11.4 - Fix bugs that show up at testing. Tests now o.k.
 v0.11.5 - Exclude inline code from Markdown conversion.
 v0.11.6 - Refactor the code.
 v0.12.0 - Convert "verbatim" lines as exported by Zim. 
+v0.13.0 - Make the "backticks" code conversion an option.
 """
 
 import glob
@@ -69,7 +78,6 @@ import re
 from urllib.request import pathname2url
 
 # Configuration (to be changed by the user).
-
 RENAME_PAGES = True
 # if True, rename pages according to the names given by the top first level heading.
 
@@ -156,7 +164,7 @@ def remove_first_line():
                 f.writelines(lines)
 
 
-def change_md_style():
+def change_md_style(backticks=False):
     """Convert Markdown formatting to Obsidian style.
     
     - Replace Setext-style headings with Atx-style headings
@@ -176,6 +184,9 @@ def change_md_style():
 
     CODE_BLOCK_MARKER = '```'
     # lines that start with this string will toggle the "code block mode"
+
+    INLINE_CODE_MARKER = '`'
+    # inline code is enclosed with this string
 
     def convert_md(text):
         """Return a converted string."""
@@ -226,7 +237,38 @@ def change_md_style():
                 if previousLine is not None:
                     newLines.append(previousLine)
                 previousLine = '---'
+
+            elif backticks:
+
+                # Code blocks and inline code are marked with backticks.
+                if line.startswith(CODE_BLOCK_MARKER):
+                    isCodeblock = not isCodeblock
+                    # toggling the "code block mode"
+
+                if previousLine is not None:
+                    newLines.append(previousLine)
+
+                if not isCodeblock:
+
+                    # Exclude inline code from conversion.
+                    processedChunks = []
+                    chunks = line.split(INLINE_CODE_MARKER)
+                    for i, chunk in enumerate(chunks):
+                        if i % 2:
+                            processedChunks.append(chunk)
+                            # chunk is considered inline code
+                        else:
+
+                            #--- Convert regular Markdown text.
+                            processedChunks.append(convert_md(chunk))
+
+                    line = INLINE_CODE_MARKER.join(processedChunks)
+                previousLine = line
+                # storing the line temporarily, because the next line could be an "underline"
+
             else:
+
+                # Code blocks are indented with tabs.
                 if previousLine is not None:
                     newLines.append(previousLine)
 
@@ -246,6 +288,7 @@ def change_md_style():
 
                 previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"
+
         if previousLine is not None:
             newLines.append(previousLine)
             # adding the very last line to the list of processed lines
@@ -275,19 +318,26 @@ def reformat_links():
             f.writelines(newLines)
 
 
-def main():
+def main(backticks=False):
     print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
     if RENAME_PAGES:
         rename_pages()
     if REMOVE_FIRST_LINE:
         remove_first_line()
     if CHANGE_MARKDOWN_STYLE:
-        change_md_style()
+        change_md_style(backticks)
     if REFORMAT_LINKS:
         reformat_links()
     print('\nDone.')
 
 
 if __name__ == '__main__':
-    main()
-
+    import argparse
+    parser = argparse.ArgumentParser(
+        description='Convert Zim Markdown export to Obsidian',
+        epilog='')
+    parser.add_argument('--backticks',
+                        action="store_true",
+                        help='verbatim blocks and inline code are marked with backticks')
+    args = parser.parse_args()
+    main(args.backticks)

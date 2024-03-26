@@ -24,7 +24,7 @@ Loops through all subdirectories of a *Zim* notebook Markdown export.
 
 Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/src/zim2obsidian.py).
 
-## Usage
+## Workflow
 
 1. If you use indentiation in your *Zim* notebook, consider running the **subst_indent.py** tool first. 
 2. Have *Zim* export the notebook to Markdown (export each page to a separate file). 
@@ -33,6 +33,32 @@ Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/mar
 5. Copy **zim2obsidian.py** into the export root directory. 
 6. Start it by double clicking on it or from the console. 
 
+## Usage of the zim2obsidian.py script
+
+```
+zim2obsidian.py [-h] [--backticks]
+
+Convert Zim Markdown export to Obsidian
+
+options:
+  -h, --help   show a help message and exit
+  --backticks  verbatim blocks and inline code are marked with backticks
+
+```
+
+### The "backticks" option explained
+
+*Zim* exports "verbatim" blocks indented with tabs.
+By default, *zim2obsidian.py" encloses such blocks with three backticks, 
+so that *Obsidian* recognizes them as code blocks.
+Inline code markup is not supported by regular *Zim*.
+
+However, you can enclose inline code with backticks in *Zim*, and
+"fence" code blocks with three backticks, as usual in GitHub flavored markdown. 
+Then you can call *zim2obsidian.py" with the `--backticks` argument. 
+The script then keeps the backticks-enclosed passages verbatim. 
+Leading tabs are passed through without adding code block markers.
+ 
 ---
 
 ## Feedback? Ideas? Feature requests?
