@@ -58,6 +58,7 @@ v0.11.1 - Use a library function for escaping spaces in links.
 v0.11.2 - Refactor the checkbox conversion code.
 v0.11.3 - Bugfix: Exclude code blocks from zim2obsidian formatting
 v0.11.4 - Fix bugs that show up at testing. Tests now o.k.
+v0.11.5 - Exclude inline code from Markdown conversion.
 """
 
 import glob
@@ -80,6 +81,24 @@ REFORMAT_LINKS = False
 # If True, change Markdown links to wikilinks.
 # This feature is experimental and disabled by default.
 
+CHECKBOXES = {
+             '☐': '[ ]',
+             '☑': '[x]',
+             '☒': '[c]',
+             '▷': '[>]',
+             '◁': '[<]',
+              }
+# replacement dictionary; key: Zim checkbox, value: Obsidian checkbox
+
+CODE_BLOCK_MARKER = '```'
+# lines that start with this string will toggle the "code block mode"
+
+INLINE_CODE_MARKER = '`'
+# inline code is enclosed with this string
+
+FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
+# set of characters that filenames cannot contain
+
 
 def rename_pages():
     """Rename pages according to the names given by the top first level heading.
@@ -88,9 +107,6 @@ def rename_pages():
     """
 
     #--- First run: Rename the pages and collect the new filenames.
-
-    FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
-    # set of characters that filenames cannot contain
 
     noteNames = {}
     # a dictionary; key: old note name, value: new note name (created from the heading)
@@ -154,6 +170,24 @@ def remove_first_line():
                 f.writelines(lines)
 
 
+def convert_md(text):
+    """Return a converted string."""
+
+    #--- Convert checkboxes.
+    for c in CHECKBOXES:
+        text = re.sub(f'(\* )*{c}', f'- {CHECKBOXES[c]}', text)
+
+    #--- Convert highlighting.
+    text = re.sub('__(.+?)__', '==\\1==', text)
+
+    #--- Convert tags.
+    if '@' in text:
+        print('- Converting tags ...')
+        text = re.sub('@(\S+?)', '#\\1', text)
+
+    return text
+
+
 def change_md_style():
     """Convert Markdown formatting to Obsidian style.
     
@@ -163,16 +197,6 @@ def change_md_style():
     - Convert checkboxes.
     - Convert tags.
     """
-    CHECKBOXES = {
-                 '☐': '[ ]',
-                 '☑': '[x]',
-                 '☒': '[c]',
-                 '▷': '[>]',
-                 '◁': '[<]',
-                  }
-    # replacement dictionary; key: Zim checkbox, value: Obsidian checkbox
-    CODE_BLOCK_MARKER = '```'
-    # lines that start with this string will toggle the "code block mode"
 
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
@@ -216,17 +240,19 @@ def change_md_style():
 
                 if not isCodeblock:
 
-                    #--- Convert checkboxes.
-                    for c in CHECKBOXES:
-                        line = re.sub(f'(\* )*{c}', f'- {CHECKBOXES[c]}', line)
+                    # Exclude inline code from conversion.
+                    processedChunks = []
+                    chunks = line.split(INLINE_CODE_MARKER)
+                    for i, chunk in enumerate(chunks):
+                        if i % 2:
+                            processedChunks.append(chunk)
+                            # chunk with even number is considered inline code
+                        else:
 
-                    #--- Convert highlighting.
-                    line = re.sub('__(.+?)__', '==\\1==', line)
+                            # Convert regular Markdown text.
+                            processedChunks.append(convert_md(chunk))
 
-                    #--- Convert tags.
-                    if '@' in line:
-                        print('- Converting tags ...')
-                        line = re.sub('@(\S+?)', '#\\1', line)
+                    line = INLINE_CODE_MARKER.join(processedChunks)
 
                 previousLine = line
                 # storing the line temporarily, because the next line could be an "underline"
