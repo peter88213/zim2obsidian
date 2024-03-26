@@ -2,6 +2,7 @@
 
 Post-process Zim Markdown export for use with Obsidian.
 
+
 ## Features
 
 Loops through all subdirectories of a *Zim* notebook Markdown export.
@@ -15,16 +16,20 @@ Loops through all subdirectories of a *Zim* notebook Markdown export.
     - Converts highlighting.
     - Converts checkboxes.
     - Converts tags.
+    - Converts verbatim blocks to "fenced" code blocks.
+    
 
 ## Requirements
 
 - A Python installation (version 3.6 or newer).
 
+
 ## Download
 
 Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/src/zim2obsidian.py).
 
-## Workflow
+
+## Suggested workflow
 
 1. If you use indentiation in your *Zim* notebook, consider running the **subst_indent.py** tool first. 
 2. Have *Zim* export the notebook to Markdown (export each page to a separate file). 
@@ -32,6 +37,7 @@ Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/mar
 4. If you have substituted indentiation with the **subst_indent.py** preprocessor, run the **indent_md.py** tool now.
 5. Copy **zim2obsidian.py** into the export root directory. 
 6. Start it by double clicking on it or from the console. 
+
 
 ## Usage of the zim2obsidian.py script
 
