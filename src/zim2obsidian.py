@@ -4,7 +4,7 @@
 Loops through all subdirectories of a Zim notebook Markdown export and processes the pages.
 For Details, see the README page on GitHub.
 
-Workflow:
+Suggested workflow:
 
 1. Have Zim export the Notebook to Markdown (Export each page to a separate file). 
 2. Make sure the Markdown files have the ".md" extension. If not, run markdown2md.py first.
@@ -13,14 +13,12 @@ Workflow:
 
 usage: zim2obsidian.py [-h] [-b]
 
-Convert Zim Markdown export to Obsidian
-
 options:
   -h, --help   show a help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
 
 Requires Python 3.6+
-Copyright (c) 2023 Peter Triesberger
+Copyright (c) 2024 Peter Triesberger
 For further information see https://github.com/peter88213/zim2obsidian
 Published under the MIT License (https://opensource.org/licenses/mit-license.php)
 
@@ -345,7 +343,7 @@ def main(backticks=False):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(
-        description='Convert Zim Markdown export to Obsidian',
+        description='Post-process Zim Markdown export for use with Obsidian',
         epilog=''
         )
     parser.add_argument(

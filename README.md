@@ -44,18 +44,15 @@ Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/mar
 ```
 zim2obsidian.py [-h] [-b]
 
-Convert Zim Markdown export to Obsidian
-
 options:
   -h, --help   show a help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
-
 ```
 
 ### The "backticks" option explained
 
 *Zim* exports "verbatim" blocks indented with tabs.
-By default, *zim2obsidian.py" encloses such blocks with three backticks, 
+By default, *zim2obsidian.py* encloses such blocks with three backticks, 
 so that *Obsidian* recognizes them as code blocks.
 Inline code markup is not supported by regular *Zim*.
 
