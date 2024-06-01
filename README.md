@@ -26,7 +26,7 @@ Loops through all subdirectories of a *Zim* notebook Markdown export.
 
 ## Download
 
-Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/markdown2md/main/src/zim2obsidian.py).
+Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/zim2obsidian/main/src/zim2obsidian.py).
 
 
 ## Suggested workflow
