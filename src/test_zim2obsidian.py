@@ -1,7 +1,7 @@
 """Test script for the zim2obsidian script
 
 Requires Python 3.6+
-Copyright (c) 2023 Peter Triesberger
+Copyright (c) 2025 Peter Triesberger
 For further information see https://github.com/peter88213/zim2obsidian
 Published under the MIT License (https://opensource.org/licenses/mit-license.php)
 """
@@ -62,7 +62,7 @@ class BackticksTest(unittest.TestCase):
             os.remove(testFile)
 
 
-class WiliLinksTest(unittest.TestCase):
+class WikiLinksTest(unittest.TestCase):
     """Test case: convert a single page exported by zim."""
 
     def setUp(self):
