@@ -24,8 +24,10 @@ blabla ==highlighted== blabla ==highlighted==.
 #Tag1 #Tag2 #Tag3
 @ @
 @
-#Tag4#Tag5
+#Tag4@Tag5
 #@Tag6
+
+[name@gmail.com](mailto:name@gmail.com)
 
 This is a line with `@inline raw code ▷ 1` and `@inline raw code 2`
 `@inline raw code 3` begins the line.

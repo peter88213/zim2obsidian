@@ -30,6 +30,8 @@ blabla __highlighted__ blabla __highlighted__.
 @Tag4@Tag5
 @@Tag6
 
+[name@gmail.com](mailto:name@gmail.com)
+
 This is a line with `@inline raw code ▷ 1` and `@inline raw code 2`
 `@inline raw code 3` begins the line.
 @This line also has `@inline raw code 4` for testing.
