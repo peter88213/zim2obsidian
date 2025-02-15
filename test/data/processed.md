@@ -29,9 +29,9 @@ blabla ==highlighted== blabla ==highlighted==.
 
 [name@gmail.com](mailto:name@gmail.com)
 
-This is a line with `@inline raw code - [>] 1` and `@inline raw code 2`
-`@inline raw code 3` begins the line.
-#This line also has `@inline raw code 4` for testing.
+This is a line with `#inline raw code - [>] 1` and `#inline raw code 2`
+`#inline raw code 3` begins the line.
+#This line also has `#inline raw code 4` for testing.
 
 ```
    #This is raw code fenced with backticks.

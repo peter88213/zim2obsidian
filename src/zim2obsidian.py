@@ -70,6 +70,7 @@ v0.12.0 - Convert "verbatim" lines as exported by Zim.
 v0.13.0 - Make the "backticks" code conversion an option.
 v0.13.1 - Provide an abbreviation for the "backticks" argument.
 v0.13.2 - Preserving "@" inside words such as email addresses.
+v0.13.3 - Refined regular expression to respect verbatim text.
 """
 
 import glob
@@ -204,8 +205,7 @@ def change_md_style(backticks=False):
         #--- Convert tags.
         if '@' in text:
             print('- Converting tags ...')
-            text = re.sub('^@(\S+?)', '#\\1', text)
-            text = re.sub('(\s)@(\S+?)', '\\1#\\2', text)
+            text = re.sub('(\B)@{1}(\S+?)', '\\1#\\2', text)
 
         return text
 
