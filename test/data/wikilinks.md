@@ -29,7 +29,7 @@ blabla ==highlighted== blabla ==highlighted==.
 
 [[mailto:name@gmail.com|name@gmail.com]]
 
-[[) (including Game Dev Map|Game developers:Studios]]
+[[Game developers/Studios]] (including Game Dev Map)
 
 This is a line with `#inline raw code - [>] 1` and `#inline raw code 2`
 `#inline raw code 3` begins the line.
