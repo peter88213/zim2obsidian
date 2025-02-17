@@ -29,6 +29,8 @@ blabla ==highlighted== blabla ==highlighted==.
 
 [name@gmail.com](mailto:name@gmail.com)
 
+[Game developers:Studios]() (including Game Dev Map)
+
 This is a line with `@inline raw code ▷ 1` and `@inline raw code 2`
 `@inline raw code 3` begins the line.
 #This line also has `@inline raw code 4` for testing.
