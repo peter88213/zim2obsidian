@@ -71,12 +71,14 @@ v0.13.0 - Make the "backticks" code conversion an option.
 v0.13.1 - Provide an abbreviation for the "backticks" argument.
 v0.13.2 - Preserving "@" inside words such as email addresses.
 v0.13.3 - Refined regular expression to respect verbatim text.
+v0.13.4 - Unquoting wikilinks.
 """
 
 import glob
 import os
 import re
 from urllib.request import pathname2url
+from urllib.parse import unquote
 
 # Configuration (to be changed by the user).
 RENAME_PAGES = True
@@ -144,6 +146,8 @@ def rename_pages():
             links = re.findall(f'\[.+(\]\(.*{noteName}\))', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, pathname2url(noteNames[noteName])).replace('](./', '](')
+                if REFORMAT_LINKS:
+                    newLink = unquote(newLink)
                 print(f'- Replacing {oldLink} with {newLink} ...')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
