@@ -2,7 +2,7 @@
 
 blabla
 
-[[This%20is%20a%20sub%20page.md|Next page]]
+[[This is a sub page.md|Next page]]
 
 ## Second level heading
 
