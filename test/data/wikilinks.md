@@ -4,6 +4,8 @@ blabla
 
 [[This is a sub page.md|Next page]]
 
+[[C++ is some programming language.md|C++]]
+
 ## Second level heading
 
 [[Some dir/Some page.md]]

@@ -14,7 +14,8 @@ import zim2obsidian
 TEST_DIR = '../test/workdir'
 TEST_INPUT = 'Junk.md'
 TEST_OUTPUT = 'Home.md'
-SUBPAGE = 'subpage.md'
+SUBPAGE1 = 'subpage.md'
+SUBPAGE2 = 'C++.md'
 ORIGINAL_FILE = '../data/original.md'
 REFERENCE_FILE = '../data/processed.md'
 WIKILINKS_FILE = '../data/wikilinks.md'
@@ -35,7 +36,8 @@ class SinglePageTest(unittest.TestCase):
 
     def setUp(self):
         copyfile(ORIGINAL_FILE, TEST_INPUT)
-        copyfile(f'../data/{SUBPAGE}', f'../workdir/{SUBPAGE}')
+        copyfile(f'../data/{SUBPAGE1}', f'../workdir/{SUBPAGE1}')
+        copyfile(f'../data/{SUBPAGE2}', f'../workdir/{SUBPAGE2}')
 
     def test_zim2obsidian(self):
         zim2obsidian.main()
@@ -51,7 +53,8 @@ class BackticksTest(unittest.TestCase):
 
     def setUp(self):
         copyfile(ORIGINAL_FILE, TEST_INPUT)
-        copyfile(f'../data/{SUBPAGE}', f'../workdir/{SUBPAGE}')
+        copyfile(f'../data/{SUBPAGE1}', f'../workdir/{SUBPAGE1}')
+        copyfile(f'../data/{SUBPAGE2}', f'../workdir/{SUBPAGE2}')
 
     def test_zim2obsidian(self):
         zim2obsidian.main(backticks=True)
@@ -67,7 +70,8 @@ class WikiLinksTest(unittest.TestCase):
 
     def setUp(self):
         copyfile(ORIGINAL_FILE, TEST_INPUT)
-        copyfile(f'../data/{SUBPAGE}', f'../workdir/{SUBPAGE}')
+        copyfile(f'../data/{SUBPAGE1}', f'../workdir/{SUBPAGE1}')
+        copyfile(f'../data/{SUBPAGE2}', f'../workdir/{SUBPAGE2}')
 
     def test_zim2obsidian(self):
         zim2obsidian.REFORMAT_LINKS = True
