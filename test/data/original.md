@@ -6,6 +6,8 @@ blabla
 
 [Next page](./subpage.md)
 
+[C++](./C++.md)
+
 Second level heading
 --------------------
 

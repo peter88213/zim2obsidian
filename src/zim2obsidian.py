@@ -72,6 +72,7 @@ v0.13.1 - Provide an abbreviation for the "backticks" argument.
 v0.13.2 - Preserving "@" inside words such as email addresses.
 v0.13.3 - Refined regular expression to respect verbatim text.
 v0.13.4 - Unquoting wikilinks.
+v0.13.5 - Escaping regex special characters in note names.
 """
 
 import glob
@@ -143,7 +144,8 @@ def rename_pages():
         with open(noteFile, 'r', encoding='utf-8') as f:
             page = f.read()
         for noteName in noteNames:
-            links = re.findall(f'\[.+(\]\(.*{noteName}\))', page)
+            escapedNoteName = re.escape(noteName)
+            links = re.findall(fr'\[.+(\]\(.*{escapedNoteName}\))', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, pathname2url(noteNames[noteName])).replace('](./', '](')
                 if REFORMAT_LINKS:
@@ -201,7 +203,7 @@ def change_md_style(backticks=False):
 
         #--- Convert checkboxes.
         for c in CHECKBOXES:
-            text = re.sub(f'(\* )*{c}', f'- {CHECKBOXES[c]}', text)
+            text = re.sub(fr'(\* )*{c}', f'- {CHECKBOXES[c]}', text)
 
         #--- Convert highlighting.
         text = re.sub('__(.+?)__', '==\\1==', text)
@@ -209,7 +211,7 @@ def change_md_style(backticks=False):
         #--- Convert tags.
         if '@' in text:
             print('- Converting tags ...')
-            text = re.sub('(\B)@{1}(\S+?)', '\\1#\\2', text)
+            text = re.sub(r'(\B)@{1}(\S+?)', '\\1#\\2', text)
 
         return text
 
@@ -320,8 +322,8 @@ def reformat_links():
             lines = f.readlines()
         newLines = []
         for line in lines:
-            newLine = re.sub('\[(.+?)\]\((.+?)\)', '[[\\2|\\1]]', line)
-            newLine = re.sub('\[]\((.+?)\)', '[[\\1]]', newLine)
+            newLine = re.sub(r'\[(.+?)\]\((.+?)\)', '[[\\2|\\1]]', line)
+            newLine = re.sub(r'\[]\((.+?)\)', '[[\\1]]', newLine)
             newLine = newLine.replace('[[./', '[[')
             newLines.append(newLine)
         with open(noteFile, 'w', encoding='utf-8') as f:

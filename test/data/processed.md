@@ -4,6 +4,8 @@ blabla
 
 [Next page](This%20is%20a%20sub%20page.md)
 
+[C++](C%2B%2B%20is%20some%20programming%20language.md)
+
 ## Second level heading
 
 [](./Some dir/Some page.md)
