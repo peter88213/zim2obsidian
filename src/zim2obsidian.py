@@ -74,6 +74,7 @@ v0.13.3 - Refined regular expression to respect verbatim text.
 v0.13.4 - Unquoting wikilinks.
 v0.13.5 - Escaping regex special handle_data in note names.
 v0.14.0 - Improved wikilinks conversion, using a parser instead of regular expressions.
+v0.14.1 - Refactored the wikilinks conversion for better performance.
 """
 
 import glob
@@ -310,6 +311,10 @@ def change_md_style(backticks=False):
 
 class MdLinkParser:
     """Parser implementing a state machine for Markdown link conversion."""
+    BODY = 0
+    DESC = 1
+    LINK = 2
+    URL = 3
 
     def __init__(self):
         self.markup = {
@@ -324,7 +329,7 @@ class MdLinkParser:
         # list of characters, buffering the read-in description
         self.urlBuffer = []
         # list of characters, buffering the read-in URL
-        self.state = 'BODY'
+        self.state = self.BODY
 
     def to_wikilinks(self, text):
         """Return text with Markdown links converted into wikilinks."""
@@ -338,7 +343,7 @@ class MdLinkParser:
         self.results.clear()
         self.descBuffer.clear()
         self.urlBuffer.clear()
-        self.state = 'BODY'
+        self.state = self.BODY
 
     def feed(self, data):
         """Feed some text to the parser."""
@@ -346,25 +351,25 @@ class MdLinkParser:
             self.markup.get(c, self.handle_data)(c)
 
     def handle_desc_start(self, c):
-        if self.state == 'BODY':
-            self.state = 'DESC'
+        if self.state == self.BODY:
+            self.state = self.DESC
         else:
             self.handle_data(c)
 
     def handle_desc_end(self, c):
-        if self.state == 'DESC':
-            self.state = 'LINK'
+        if self.state == self.DESC:
+            self.state = self.LINK
         else:
             self.handle_data(c)
 
     def handle_url_start(self, c):
-        if self.state == 'LINK':
-            self.state = 'URL'
+        if self.state == self.LINK:
+            self.state = self.URL
         else:
             self.handle_data(c)
 
     def handle_url_end(self, c):
-        if self.state == 'URL':
+        if self.state == self.URL:
             # Create a wikilink and append it to the results.
             self.results.append('[[')
             if self.urlBuffer:
@@ -384,27 +389,27 @@ class MdLinkParser:
             self.results.append(']]')
             self.urlBuffer.clear()
             self.descBuffer.clear()
-            self.state = 'BODY'
+            self.state = self.BODY
         else:
             self.handle_data(c)
 
     def handle_data(self, c):
-        if self.state == 'DESC':
+        if self.state == self.DESC:
             self.descBuffer.append(c)
             return
 
-        if self.state == 'URL':
+        if self.state == self.URL:
             self.urlBuffer.append(c)
             return
 
-        if self.state == 'LINK':
+        if self.state == self.LINK:
             # Expected '(', but got another character:
             # the bracketed text is not a link description, so restore the body text.
             self.results.append('[')
             self.results.extend(self.descBuffer)
             self.results.append(']')
             self.descBuffer.clear()
-            self.state = 'BODY'
+            self.state = self.BODY
         self.results.append(c)
 
     def close(self):
@@ -431,10 +436,15 @@ def reformat_links():
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
-            text = f.read()
-        text = linkParser.to_wikilinks(text)
+            lines = f.readlines()
+        newlines = []
+        for line in lines:
+            if '](' in line:
+                # line may contain a Markdown link
+                line = linkParser.to_wikilinks(line)
+            newlines.append(line)
         with open(noteFile, 'w', encoding='utf-8') as f:
-            f.write(text)
+            f.writelines(newlines)
 
 
 def main(backticks=False):
