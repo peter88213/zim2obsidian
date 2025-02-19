@@ -431,8 +431,6 @@ def reformat_links():
     
     Note: this is experimental and disabled by default.
     """
-    # Link parser using a state machine.
-
     # Loop through all files with the ".md" extension, including subdirectories.
 
     linkParser = MdLinkParser()
