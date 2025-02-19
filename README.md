@@ -21,7 +21,7 @@ Loops through all subdirectories of a *Zim* notebook Markdown export.
 
 ## Requirements
 
-- A Python installation (version 3.6 or newer).
+- A Python installation (version 3.9 or newer).
 
 
 ## Download

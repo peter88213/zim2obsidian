@@ -34,9 +34,10 @@ blabla __highlighted__ blabla __highlighted__.
 
 [name@gmail.com](mailto:name@gmail.com)
 
-[Game developers:Studios]() (including Game Dev Map),
-[](./Game developers/Studios.md) (including Game Dev Map),
-[Studios](./Game developers/Studios.md) (including Game Dev Map),
+[Game developers:Studios]() (including Game Dev Map)
+[](./Game developers/Studios.md) (including Game Dev Map)
+[Studios](./Game developers/Studios.md) (including Game Dev Map)
+* ☐ [Game developers:Studios]()
 
 This is a line with `@inline raw code ▷ 1` and `@inline raw code 2`
 `@inline raw code 3` begins the line.

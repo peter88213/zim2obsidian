@@ -17,8 +17,8 @@ options:
   -h, --help   show a help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
 
-Requires Python 3.6+
-Copyright (c) 2024 Peter Triesberger
+Requires Python 3.9+
+Copyright (c) 2025 Peter Triesberger
 For further information see https://github.com/peter88213/zim2obsidian
 Published under the MIT License (https://opensource.org/licenses/mit-license.php)
 
@@ -33,7 +33,7 @@ v0.3.1 - Change the wording.
 v0.3.2 - Fix a bug where the program may abort when a page is empty. 
 v0.3.3 - Generously comment the code.
 v0.4.0 - Make it a module, ready for testing.
-v0.4.1 - Extend the set of characters that filenames cannot contain.
+v0.4.1 - Extend the set of handle_data that filenames cannot contain.
 v0.5.0 - Fix a bug where directories may be linked instead of pages. 
          Make the script configurable by modularizing the features.
          Handle links with braces in the filename.
@@ -72,7 +72,8 @@ v0.13.1 - Provide an abbreviation for the "backticks" argument.
 v0.13.2 - Preserving "@" inside words such as email addresses.
 v0.13.3 - Refined regular expression to respect verbatim text.
 v0.13.4 - Unquoting wikilinks.
-v0.13.5 - Escaping regex special characters in note names.
+v0.13.5 - Escaping regex special handle_data in note names.
+v0.14.0 - Improved wikilinks conversion, using a parser instead of regular expressions.
 """
 
 import glob
@@ -102,7 +103,7 @@ def rename_pages():
     Note: Make sure to call this procedure before the page's first lines are removed.
     """
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
-    # set of characters that filenames cannot contain
+    # set of handle_data that filenames cannot contain
 
     #--- First run: Rename the pages and collect the new filenames.
 
@@ -121,7 +122,7 @@ def rename_pages():
             # Generate a new file name from the note's heading.
             newName = f'{lines[0][2:].strip()}.md'
 
-            # Remove characters that filenames cannot contain.
+            # Remove handle_data that filenames cannot contain.
             for c in FORBIDDEN_CHARACTERS:
                 newName = newName.replace(c, '')
 
@@ -148,8 +149,6 @@ def rename_pages():
             links = re.findall(fr'\[.+(\]\(.*{escapedNoteName}\))', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, pathname2url(noteNames[noteName])).replace('](./', '](')
-                if REFORMAT_LINKS:
-                    newLink = unquote(newLink)
                 print(f'- Replacing {oldLink} with {newLink} ...')
                 page = page.replace(oldLink, newLink)
                 hasChanged = True
@@ -309,25 +308,133 @@ def change_md_style(backticks=False):
             f.write('\n'.join(newLines))
 
 
+class MdLinkParser:
+    """Parser implementing a state machine for Markdown link conversion."""
+
+    def __init__(self):
+        self.markup = {
+            '[': self.handle_desc_start,
+            ']': self.handle_desc_end,
+            '(': self.handle_url_start,
+            ')': self.handle_url_end,
+        }
+        self.results = []
+        # list of characters and strings
+        self.descBuffer = []
+        # list of characters, buffering the read-in description
+        self.urlBuffer = []
+        # list of characters, buffering the read-in URL
+        self.state = 'BODY'
+
+    def to_wikilinks(self, text):
+        """Return text with Markdown links converted into wikilinks."""
+        self.reset()
+        self.feed(text)
+        self.close()
+        return ''.join(self.results)
+
+    def reset(self):
+        """Reset the instance. Loses all unprocessed data."""
+        self.results.clear()
+        self.descBuffer.clear()
+        self.urlBuffer.clear()
+        self.state = 'BODY'
+
+    def feed(self, data):
+        """Feed some text to the parser."""
+        for c in data:
+            self.markup.get(c, self.handle_data)(c)
+
+    def handle_desc_start(self, c):
+        if self.state == 'BODY':
+            self.state = 'DESC'
+        else:
+            self.handle_data(c)
+
+    def handle_desc_end(self, c):
+        if self.state == 'DESC':
+            self.state = 'LINK'
+        else:
+            self.handle_data(c)
+
+    def handle_url_start(self, c):
+        if self.state == 'LINK':
+            self.state = 'URL'
+        else:
+            self.handle_data(c)
+
+    def handle_url_end(self, c):
+        if self.state == 'URL':
+            # Create a wikilink and append it to the results.
+            self.results.append('[[')
+            if self.urlBuffer:
+                urlStr = ''.join(self.urlBuffer)
+                urlStr = urlStr.removeprefix('./')
+                urlStr = unquote(urlStr)
+                self.results.append(urlStr)
+                if self.descBuffer:
+                    self.results.append('|')
+                    self.results.extend(self.descBuffer)
+            else:
+                # Turn the description into an URL.
+                urlStr = ''.join(self.descBuffer)
+                urlStr = urlStr.replace(':', '/')
+                urlStr = unquote(urlStr)
+                self.results.append(urlStr)
+            self.results.append(']]')
+            self.urlBuffer.clear()
+            self.descBuffer.clear()
+            self.state = 'BODY'
+        else:
+            self.handle_data(c)
+
+    def handle_data(self, c):
+        if self.state == 'DESC':
+            self.descBuffer.append(c)
+            return
+
+        if self.state == 'URL':
+            self.urlBuffer.append(c)
+            return
+
+        if self.state == 'LINK':
+            # Expected '(', but got another character:
+            # the bracketed text is not a link description, so restore the body text.
+            self.results.append('[')
+            self.results.extend(self.descBuffer)
+            self.results.append(']')
+            self.descBuffer.clear()
+            self.state = 'BODY'
+        self.results.append(c)
+
+    def close(self):
+        """Append all buffered data to the results."""
+        if self.descBuffer:
+            self.results.append('[')
+            self.results.extend(self.descBuffer)
+        if self.urlBuffer:
+            self.results.append('](')
+            self.results.extend(self.urlBuffer)
+        # incomplete Markdown links are adopted unchanged
+
+
 def reformat_links():
     """Change Markdown links to wikilinks.
     
     Note: this is experimental and disabled by default.
     """
+    # Link parser using a state machine.
 
     # Loop through all files with the ".md" extension, including subdirectories.
+
+    linkParser = MdLinkParser()
     for noteFile in glob.iglob('**/*.md', recursive=True):
         print(f'Reformatting links in "{noteFile}" ...')
         with open(noteFile, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-        newLines = []
-        for line in lines:
-            newLine = re.sub(r'\[(.+?)\]\((.+?)\)', '[[\\2|\\1]]', line)
-            newLine = re.sub(r'\[]\((.+?)\)', '[[\\1]]', newLine)
-            newLine = newLine.replace('[[./', '[[')
-            newLines.append(newLine)
+            text = f.read()
+        text = linkParser.to_wikilinks(text)
         with open(noteFile, 'w', encoding='utf-8') as f:
-            f.writelines(newLines)
+            f.write(text)
 
 
 def main(backticks=False):

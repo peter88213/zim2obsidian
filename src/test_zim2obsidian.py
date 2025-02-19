@@ -1,6 +1,6 @@
 """Test script for the zim2obsidian script
 
-Requires Python 3.6+
+Requires Python 3.9+
 Copyright (c) 2025 Peter Triesberger
 For further information see https://github.com/peter88213/zim2obsidian
 Published under the MIT License (https://opensource.org/licenses/mit-license.php)
