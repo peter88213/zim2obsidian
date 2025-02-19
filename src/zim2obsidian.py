@@ -75,6 +75,7 @@ v0.13.4 - Unquoting wikilinks.
 v0.13.5 - Escaping regex special handle_data in note names.
 v0.14.0 - Improved wikilinks conversion, using a parser instead of regular expressions.
 v0.14.1 - Refactored the wikilinks conversion for better performance.
+v0.14.2 - Clearing the buffers in MdLinkParser.close().
 """
 
 import glob
@@ -417,9 +418,11 @@ class MdLinkParser:
         if self.descBuffer:
             self.results.append('[')
             self.results.extend(self.descBuffer)
+            self.descBuffer.clear()
         if self.urlBuffer:
             self.results.append('](')
             self.results.extend(self.urlBuffer)
+            self.urlBuffer.clear()
         # incomplete Markdown links are adopted unchanged
 
 
