@@ -34,7 +34,7 @@ v0.3.1 - Change the wording.
 v0.3.2 - Fix a bug where the program may abort when a page is empty. 
 v0.3.3 - Generously comment the code.
 v0.4.0 - Make it a module, ready for testing.
-v0.4.1 - Extend the set of handle_data that filenames cannot contain.
+v0.4.1 - Extend the set of data that filenames cannot contain.
 v0.5.0 - Fix a bug where directories may be linked instead of pages. 
          Make the script configurable by modularizing the features.
          Handle links with braces in the filename.
@@ -73,7 +73,7 @@ v0.13.1 - Provide an abbreviation for the "backticks" argument.
 v0.13.2 - Preserving "@" inside words such as email addresses.
 v0.13.3 - Refined regular expression to respect verbatim text.
 v0.13.4 - Unquoting wikilinks.
-v0.13.5 - Escaping regex special handle_data in note names.
+v0.13.5 - Escaping regex special data in note names.
 v0.14.0 - Improved wikilinks conversion, using a parser instead of regular expressions.
 v0.14.1 - Refactored the wikilinks conversion for better performance.
 v0.14.2 - Clearing the buffers in MdLinkParser.close().
@@ -103,7 +103,7 @@ def rename_pages():
     Note: Make sure to call this procedure before the page's first lines are removed.
     """
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
-    # set of handle_data that filenames cannot contain
+    # set of data that filenames cannot contain
 
     #--- First run: Rename the pages and collect the new filenames.
 
@@ -122,7 +122,7 @@ def rename_pages():
             # Generate a new file name from the note's heading.
             newName = f'{lines[0][2:].strip()}.md'
 
-            # Remove handle_data that filenames cannot contain.
+            # Remove data that filenames cannot contain.
             for c in FORBIDDEN_CHARACTERS:
                 newName = newName.replace(c, '')
 
