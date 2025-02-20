@@ -11,11 +11,12 @@ Suggested workflow:
 3. Copy this Python script into the export root directory. 
 4. Start zim2obsidian.py by double clicking on it or from the console. 
 
-usage: zim2obsidian.py [-h] [-b]
+usage: zim2obsidian.py [-h] [-b] [-w]
 
 options:
-  -h, --help   show a help message and exit
+  -h, --help       show a help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
+  -w, --wikilinks  Convert Markdown links to wikilinks
 
 Requires Python 3.9+
 Copyright (c) 2025 Peter Triesberger
@@ -76,6 +77,7 @@ v0.13.5 - Escaping regex special handle_data in note names.
 v0.14.0 - Improved wikilinks conversion, using a parser instead of regular expressions.
 v0.14.1 - Refactored the wikilinks conversion for better performance.
 v0.14.2 - Clearing the buffers in MdLinkParser.close().
+v0.15.0 - New command line option: conversion of Markdown links to wikilinks.
 """
 
 import glob
@@ -93,10 +95,6 @@ REMOVE_FIRST_LINE = True
 
 CHANGE_MARKDOWN_STYLE = True
 # If True, convert Markdown formatting to Obsidian style.
-
-REFORMAT_LINKS = False
-# If True, change Markdown links to wikilinks.
-# This feature is experimental and disabled by default.
 
 
 def rename_pages():
@@ -448,7 +446,7 @@ def reformat_links():
             f.writelines(newlines)
 
 
-def main(backticks=False):
+def main(backticks=False, wikilinks=False):
     """Run the converter
     
     Optional arguments:
@@ -461,7 +459,7 @@ def main(backticks=False):
         remove_first_line()
     if CHANGE_MARKDOWN_STYLE:
         change_md_style(backticks)
-    if REFORMAT_LINKS:
+    if wikilinks:
         reformat_links()
     print('\nDone.')
 
@@ -477,5 +475,10 @@ if __name__ == '__main__':
         action="store_true",
         help='verbatim blocks and inline code are marked with backticks'
         )
+    parser.add_argument(
+        '-w', '--wikilinks',
+        action="store_true",
+        help='Convert Markdown links to wikilinks'
+        )
     args = parser.parse_args()
-    main(args.backticks)
+    main(args.backticks, args.wikilinks)

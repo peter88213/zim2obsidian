@@ -74,8 +74,7 @@ class WikiLinksTest(unittest.TestCase):
         copyfile(f'../data/{SUBPAGE2}', f'../workdir/{SUBPAGE2}')
 
     def test_zim2obsidian(self):
-        zim2obsidian.REFORMAT_LINKS = True
-        zim2obsidian.main()
+        zim2obsidian.main(wikilinks=True)
         self.assertEqual(read_file(TEST_OUTPUT), read_file(WIKILINKS_FILE))
 
     def tearDown(self):
