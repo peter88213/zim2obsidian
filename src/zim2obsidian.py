@@ -96,6 +96,10 @@ REMOVE_FIRST_LINE = True
 CHANGE_MARKDOWN_STYLE = True
 # If True, convert Markdown formatting to Obsidian style.
 
+MOVE_UP_INDEX_PAGES = False
+# if True, move all Zim index pages one level up.
+# This is not fully implemented yet!
+
 
 def rename_pages():
     """Rename pages according to the names given by the top first level heading.
@@ -446,6 +450,51 @@ def reformat_links():
             f.writelines(newlines)
 
 
+def move_up_index_pages():
+    """Move all Zim index pages one level up.
+    
+    This is all but finished.
+    """
+
+    def make_index_pages(nodeDir):
+        try:
+            for node in next(os.walk(nodeDir))[1]:
+                try:
+                    os.rename(f'{nodeDir}/{node}.md', f'{nodeDir}/{node}/{node}.md')
+                except:
+                    pass
+                else:
+                    print(f'Moved up "{nodeDir}/{node}.md" ...')
+                    allNodes.append(node)
+                make_index_pages(f'{nodeDir}/{node}')
+        except StopIteration:
+            pass
+
+    # First run: Move all Zim index pages one level up, and rename them index.md.
+    allNodes = []
+    make_index_pages(os.getcwd())
+
+    # Second run: Adjust links.
+    for noteFile in glob.glob('**/*.md', recursive=True):
+        print(f'Adjusting links in "{noteFile}" ...')
+
+        # Todo: Make sure to level-down the links on the moved  pages.
+
+        hasChanged = False
+        with open(noteFile, 'r', encoding='utf-8') as f:
+            page = f.read()
+        for indexName in allNodes:
+            links = re.findall(f'\[.+\]\((.*{indexName})\)', page)
+            for oldLink in links:
+                newLink = oldLink.replace(indexName, f'{indexName}/{indexName}')
+                print(f'"{oldLink}"-->"{newLink}"')
+                page = page.replace(oldLink, newLink)
+                hasChanged = True
+        if hasChanged:
+            with open(noteFile, 'w', encoding='utf-8') as f:
+                f.write(page)
+
+
 def main(backticks=False, wikilinks=False):
     """Run the converter
     
@@ -461,6 +510,8 @@ def main(backticks=False, wikilinks=False):
         change_md_style(backticks)
     if wikilinks:
         reformat_links()
+    if MOVE_UP_INDEX_PAGES:
+        move_up_index_pages()
     print('\nDone.')
 
 
