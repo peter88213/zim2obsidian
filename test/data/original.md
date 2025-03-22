@@ -8,6 +8,9 @@ blabla
 
 [C++](./C++.md)
 
+# Worklog
+[Game design] Balanced skill powers
+
 Second level heading
 --------------------
 

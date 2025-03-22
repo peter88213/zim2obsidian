@@ -6,6 +6,9 @@ blabla
 
 [[C++ is some programming language.md|C++]]
 
+# Worklog
+[Game design] Balanced skill powers
+
 ## Second level heading
 
 [[Some dir/Some page.md]]

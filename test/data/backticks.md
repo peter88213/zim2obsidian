@@ -6,6 +6,9 @@ blabla
 
 [C++](C%2B%2B%20is%20some%20programming%20language.md)
 
+# Worklog
+[Game design] Balanced skill powers
+
 ## Second level heading
 
 [](./Some dir/Some page.md)
