@@ -49,7 +49,7 @@ Post-process Zim Markdown export for use with Obsidian
 options:
   -h, --help       show this help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
-  -w, --wikilinks  Convert Markdown links to wikilinks
+  -w, --wikilinks  Convert internal Markdown links to wikilinks
 ```
 
 ### The "backticks" option explained

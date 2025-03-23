@@ -9,8 +9,12 @@ blabla
 [C++](./C++.md)
 
 # Worklog
+
 [Game design] Balanced skill powers
+
 \[Game design] Balanced skill powers
+
+![](file:///path/to/file%20name.png)
 
 Second level heading
 --------------------

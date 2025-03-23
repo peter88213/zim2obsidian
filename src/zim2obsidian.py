@@ -79,13 +79,14 @@ v0.14.1 - Refactored the wikilinks conversion for better performance.
 v0.14.2 - Clearing the buffers in MdLinkParser.close().
 v0.15.0 - New command line option: conversion of Markdown links to wikilinks.
 v0.15.1 - Escaping opening square brackets that don't belong to links.
+v0.15.2 - No longer converting links to wikilinks if the path is an URL.
 """
 
 import glob
 import os
 import re
 from urllib.request import pathname2url
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 # Configuration (to be changed by the user).
 RENAME_PAGES = True
@@ -319,25 +320,29 @@ class MdLinkParser:
     BODY = 0
     DESC = 1
     LINK = 2
-    URL = 3
+    ADDRESS = 3
 
     def __init__(self):
         self.markup = {
             '[': self.handle_desc_start,
             ']': self.handle_desc_end,
-            '(': self.handle_url_start,
-            ')': self.handle_url_end,
+            '(': self.handle_addr_start,
+            ')': self.handle_addr_end,
         }
         self.results = []
         # list of characters and strings
         self.descBuffer = []
-        # list of characters, buffering the read-in description
-        self.urlBuffer = []
-        # list of characters, buffering the read-in URL
+        # list of characters, buffering the read-in link description
+        self.addrBuffer = []
+        # list of characters, buffering the read-in link address
         self.state = self.BODY
 
     def to_wikilinks(self, text):
-        """Return text with Markdown links converted into wikilinks."""
+        """Return text with Markdown links converted into wikilinks.
+        
+        If addr is not an external URL, the coversion goes as follows:
+        [desc](addr) --> [[addr|desc]]            
+        """
         self.reset()
         self.feed(text)
         self.close()
@@ -347,7 +352,7 @@ class MdLinkParser:
         """Reset the instance. Loses all unprocessed data."""
         self.results.clear()
         self.descBuffer.clear()
-        self.urlBuffer.clear()
+        self.addrBuffer.clear()
         self.state = self.BODY
 
     def feed(self, data):
@@ -367,32 +372,49 @@ class MdLinkParser:
         else:
             self.handle_data(c)
 
-    def handle_url_start(self, c):
+    def handle_addr_start(self, c):
         if self.state == self.LINK:
-            self.state = self.URL
+            self.state = self.ADDRESS
         else:
             self.handle_data(c)
 
-    def handle_url_end(self, c):
-        if self.state == self.URL:
-            # Create a wikilink and append it to the results.
-            self.results.append('[[')
-            if self.urlBuffer:
-                urlStr = ''.join(self.urlBuffer)
-                urlStr = urlStr.removeprefix('./')
-                urlStr = unquote(urlStr)
-                self.results.append(urlStr)
-                if self.descBuffer:
-                    self.results.append('|')
+    def handle_addr_end(self, c):
+        if self.state == self.ADDRESS:
+            if self.addrBuffer:
+                addrStr = ''.join(self.addrBuffer)
+                if urlparse(addrStr).scheme:
+
+                    # The address is an external URL:
+                    # Restore the original link.
+                    self.results.append('[')
                     self.results.extend(self.descBuffer)
+                    self.results.append('](')
+                    self.results.append(addrStr)
+                    self.results.append(')')
+
+                else:
+                    # Create a wikilink with address and description.
+                    addrStr = addrStr.removeprefix('./')
+                    self.results.append('[[')
+                    addrStr = unquote(addrStr)
+                    self.results.append(addrStr)
+                    if self.descBuffer:
+                        self.results.append('|')
+                        self.results.extend(self.descBuffer)
+                    self.results.append(']]')
+
             else:
-                # Turn the description into an URL.
-                urlStr = ''.join(self.descBuffer)
-                urlStr = urlStr.replace(':', '/')
-                urlStr = unquote(urlStr)
-                self.results.append(urlStr)
-            self.results.append(']]')
-            self.urlBuffer.clear()
+                # No explicit address given:
+                # Convert the description into an internal address
+                # and create a wikilink.
+                self.results.append('[[')
+                addrStr = ''.join(self.descBuffer)
+                addrStr = addrStr.replace(':', '/')
+                addrStr = unquote(addrStr)
+                self.results.append(addrStr)
+                self.results.append(']]')
+
+            self.addrBuffer.clear()
             self.descBuffer.clear()
             self.state = self.BODY
         else:
@@ -403,8 +425,8 @@ class MdLinkParser:
             self.descBuffer.append(c)
             return
 
-        if self.state == self.URL:
-            self.urlBuffer.append(c)
+        if self.state == self.ADDRESS:
+            self.addrBuffer.append(c)
             return
 
         if self.state == self.LINK:
@@ -423,10 +445,10 @@ class MdLinkParser:
             self.results.append('[')
             self.results.extend(self.descBuffer)
             self.descBuffer.clear()
-        if self.urlBuffer:
+        if self.addrBuffer:
             self.results.append('](')
-            self.results.extend(self.urlBuffer)
-            self.urlBuffer.clear()
+            self.results.extend(self.addrBuffer)
+            self.addrBuffer.clear()
         # incomplete Markdown links are adopted unchanged
 
 

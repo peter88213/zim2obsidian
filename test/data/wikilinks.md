@@ -7,8 +7,12 @@ blabla
 [[C++ is some programming language.md|C++]]
 
 # Worklog
+
 \[Game design] Balanced skill powers
+
 \[Game design] Balanced skill powers
+
+![](file:///path/to/file%20name.png)
 
 ## Second level heading
 
@@ -33,7 +37,7 @@ blabla ==highlighted== blabla ==highlighted==.
 #Tag4@Tag5
 #@Tag6
 
-[[mailto:name@gmail.com|name@gmail.com]]
+[name@gmail.com](mailto:name@gmail.com)
 
 [[Game developers/Studios]] (including Game Dev Map)
 [[Game developers/Studios.md]] (including Game Dev Map)
