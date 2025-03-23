@@ -78,6 +78,7 @@ v0.14.0 - Improved wikilinks conversion, using a parser instead of regular expre
 v0.14.1 - Refactored the wikilinks conversion for better performance.
 v0.14.2 - Clearing the buffers in MdLinkParser.close().
 v0.15.0 - New command line option: conversion of Markdown links to wikilinks.
+v0.15.1 - Escaping opening square brackets that don't belong to links.
 """
 
 import glob
@@ -199,6 +200,11 @@ def change_md_style(backticks=False):
 
     def convert_md(text):
         """Return a converted string."""
+
+        #--- Escape opening square brackets that don't belong to links.
+        text = re.sub(r'(\[.*?\]\s)', r'\\\1', text)
+        text = re.sub(r'\\\\(\[.*?\]\s)', r'\\\1', text)
+        # undoing the substitution if the bracket was already escaped
 
         #--- Convert checkboxes.
         for c in CHECKBOXES:

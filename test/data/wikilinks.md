@@ -7,7 +7,8 @@ blabla
 [[C++ is some programming language.md|C++]]
 
 # Worklog
-[Game design] Balanced skill powers
+\[Game design] Balanced skill powers
+\[Game design] Balanced skill powers
 
 ## Second level heading
 

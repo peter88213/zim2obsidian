@@ -10,6 +10,7 @@ blabla
 
 # Worklog
 [Game design] Balanced skill powers
+\[Game design] Balanced skill powers
 
 Second level heading
 --------------------
