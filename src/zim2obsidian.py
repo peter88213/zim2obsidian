@@ -11,12 +11,13 @@ Suggested workflow:
 3. Copy this Python script into the export root directory. 
 4. Start zim2obsidian.py by double clicking on it or from the console. 
 
-usage: zim2obsidian.py [-h] [-b] [-w]
+usage: zim2obsidian.py [-h] [-b] [-w] [-@]
 
 options:
   -h, --help       show a help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
   -w, --wikilinks  Convert Markdown links to wikilinks
+  -@, --preserve_at  Do not convert Zim tags to Obsidian tags
 
 Requires Python 3.9+
 Copyright (c) 2025 Peter Triesberger
@@ -172,7 +173,7 @@ def remove_first_line():
                 f.writelines(lines)
 
 
-def change_md_style(backticks=False):
+def change_md_style(backticks=False, preserveAt=False):
     """Convert Markdown formatting to Obsidian style.
     
     Optional arguments:
@@ -215,7 +216,7 @@ def change_md_style(backticks=False):
         text = re.sub('__(.+?)__', '==\\1==', text)
 
         #--- Convert tags.
-        if '@' in text:
+        if not preserveAt and '@' in text:
             print('- Converting tags ...')
             text = re.sub(r'(\B)@{1}(\S+?)', '\\1#\\2', text)
 
@@ -474,7 +475,7 @@ def reformat_links():
             f.writelines(newlines)
 
 
-def main(backticks=False, wikilinks=False):
+def main(backticks=False, wikilinks=False, preserveAt=False):
     """Run the converter
     
     Optional arguments:
@@ -486,7 +487,7 @@ def main(backticks=False, wikilinks=False):
     if REMOVE_FIRST_LINE:
         remove_first_line()
     if CHANGE_MARKDOWN_STYLE:
-        change_md_style(backticks)
+        change_md_style(backticks, preserveAt)
     if wikilinks:
         reformat_links()
     print('\nDone.')
@@ -508,5 +509,10 @@ if __name__ == '__main__':
         action="store_true",
         help='Convert Markdown links to wikilinks'
         )
+    parser.add_argument(
+        '-@', '--preserve_at',
+        action="store_true",
+        help='Do not convert Zim tags to Obsidian tags'
+        )
     args = parser.parse_args()
-    main(args.backticks, args.wikilinks)
+    main(args.backticks, args.wikilinks, args.preserve_at)

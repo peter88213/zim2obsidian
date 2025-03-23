@@ -42,7 +42,7 @@ Save the file [zim2obsidian.py](https://raw.githubusercontent.com/peter88213/zim
 ## Usage of the zim2obsidian.py script
 
 ```
-usage: zim2obsidian.py [-h] [-b] [-w]
+usage: zim2obsidian.py [-h] [-b] [-w] [-@]
 
 Post-process Zim Markdown export for use with Obsidian
 
@@ -50,6 +50,7 @@ options:
   -h, --help       show this help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
   -w, --wikilinks  Convert internal Markdown links to wikilinks
+  -@, --preserve_at  Do not convert Zim tags to Obsidian tags
 ```
 
 ### The "backticks" option explained

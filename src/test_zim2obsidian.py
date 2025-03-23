@@ -20,6 +20,7 @@ ORIGINAL_FILE = '../data/original.md'
 REFERENCE_FILE = '../data/processed.md'
 WIKILINKS_FILE = '../data/wikilinks.md'
 BACKTICKS_FILE = '../data/backticks.md'
+NO_TAGS_FILE = '../data/no_tags.md'
 
 os.makedirs(TEST_DIR, exist_ok=True)
 os.chdir(TEST_DIR)
@@ -76,6 +77,23 @@ class WikiLinksTest(unittest.TestCase):
     def test_zim2obsidian(self):
         zim2obsidian.main(wikilinks=True)
         self.assertEqual(read_file(TEST_OUTPUT), read_file(WIKILINKS_FILE))
+
+    def tearDown(self):
+        for testFile in glob.iglob('**/*.md', recursive=True):
+            os.remove(testFile)
+
+
+class NoTagsLinksTest(unittest.TestCase):
+    """Test case: convert a single page exported by zim."""
+
+    def setUp(self):
+        copyfile(ORIGINAL_FILE, TEST_INPUT)
+        copyfile(f'../data/{SUBPAGE1}', f'../workdir/{SUBPAGE1}')
+        copyfile(f'../data/{SUBPAGE2}', f'../workdir/{SUBPAGE2}')
+
+    def test_zim2obsidian(self):
+        zim2obsidian.main(preserveAt=True)
+        self.assertEqual(read_file(TEST_OUTPUT), read_file(NO_TAGS_FILE))
 
     def tearDown(self):
         for testFile in glob.iglob('**/*.md', recursive=True):
