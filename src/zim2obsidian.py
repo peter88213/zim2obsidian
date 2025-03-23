@@ -81,6 +81,9 @@ v0.14.2 - Clearing the buffers in MdLinkParser.close().
 v0.15.0 - New command line option: conversion of Markdown links to wikilinks.
 v0.15.1 - Escaping opening square brackets that don't belong to links.
 v0.15.2 - No longer converting links to wikilinks if the path is an URL.
+v0.16.0 - New command line option: Do not convert Zim tags to Obsidian tags.
+          Refactored the code for better maintainability.
+          Removed the obsolete global configuration constants.         
 """
 
 import glob
@@ -88,16 +91,6 @@ import os
 import re
 from urllib.request import pathname2url
 from urllib.parse import unquote, urlparse
-
-# Configuration (to be changed by the user).
-RENAME_PAGES = True
-# if True, rename pages according to the names given by the top first level heading.
-
-REMOVE_FIRST_LINE = True
-# If True, remove the top heading inserted with Zim's default Markdown exporter template.
-
-CHANGE_MARKDOWN_STYLE = True
-# If True, convert Markdown formatting to Obsidian style.
 
 
 def rename_pages():
@@ -200,26 +193,35 @@ def change_md_style(backticks=False, preserveAt=False):
     INLINE_CODE_MARKER = '`'
     # inline code is enclosed with this string
 
-    def convert_md(text):
-        """Return a converted string."""
-
-        #--- Escape opening square brackets that don't belong to links.
+    def escape_opening_square_brackets(text):
+        # Return a string with opening square brackets escaped that don't belong to links.
         text = re.sub(r'(\[.*?\]\s)', r'\\\1', text)
         text = re.sub(r'\\\\(\[.*?\]\s)', r'\\\1', text)
         # undoing the substitution if the bracket was already escaped
+        return text
 
-        #--- Convert checkboxes.
+    def convert_checkboxes(text):
+        # Return a string with checkboxes converted to Obsidian style.
         for c in CHECKBOXES:
             text = re.sub(fr'(\* )*{c}', f'- {CHECKBOXES[c]}', text)
+        return text
 
-        #--- Convert highlighting.
-        text = re.sub('__(.+?)__', '==\\1==', text)
+    def convert_highlighting(text):
+        # Return a string with highlighting converted to Obsidian style.
+        return re.sub('__(.+?)__', '==\\1==', text)
 
-        #--- Convert tags.
+    def convert_tags(text):
+        # Return a string with tags converted to Obsidian style.
+        print('- Converting tags ...')
+        return re.sub(r'(\B)@{1}(\S+?)', '\\1#\\2', text)
+
+    def convert_md(text):
+        # Return a string converted to Obsidian-style Markdown.
+        text = escape_opening_square_brackets(text)
+        text = convert_checkboxes(text)
+        text = convert_highlighting(text)
         if not preserveAt and '@' in text:
-            print('- Converting tags ...')
-            text = re.sub(r'(\B)@{1}(\S+?)', '\\1#\\2', text)
-
+            text = convert_tags(text)
         return text
 
     # Loop through all files with the ".md" extension, including subdirectories.
@@ -238,20 +240,14 @@ def change_md_style(backticks=False, preserveAt=False):
         for  line in lines:
 
             if line.startswith('=') and line.count('=') == len(line):
-
-                #--- Convert 1st level heading.
                 print(f'- Converting 1st level heading "{previousLine}" ...')
                 previousLine = f'# {previousLine}'
 
             elif line.startswith('-') and line.count('-') == len(line):
-
-                #--- Convert 2nd level heading.
                 print(f'- Converting 2nd level heading "{previousLine}" ...')
                 previousLine = f'## {previousLine}'
 
             elif line.startswith('*') and line.count('*') == len(line):
-
-                #--- Convert horizontal ruler.
                 print('- Converting horizontal ruler ...')
                 if previousLine is not None:
                     newLines.append(previousLine)
@@ -482,12 +478,9 @@ def main(backticks=False, wikilinks=False, preserveAt=False):
         backticks: bool -- If True, verbatim blocks and inline code are marked with backticks.
     """
     print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
-    if RENAME_PAGES:
-        rename_pages()
-    if REMOVE_FIRST_LINE:
-        remove_first_line()
-    if CHANGE_MARKDOWN_STYLE:
-        change_md_style(backticks, preserveAt)
+    rename_pages()
+    remove_first_line()
+    change_md_style(backticks, preserveAt)
     if wikilinks:
         reformat_links()
     print('\nDone.')
