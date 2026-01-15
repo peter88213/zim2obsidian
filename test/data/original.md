@@ -6,7 +6,11 @@ blabla
 
 [Next page](./subpage.md)
 
+[Not next page](./not_subpage.md)
+
 [C++](./C++.md)
+
+[Not C++](./not_C++.md)
 
 # Worklog
 

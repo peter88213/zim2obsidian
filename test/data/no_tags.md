@@ -4,7 +4,11 @@ blabla
 
 [Next page](This%20is%20a%20sub%20page.md)
 
+[Not next page](./not_subpage.md)
+
 [C++](C%2B%2B%20is%20some%20programming%20language.md)
+
+[Not C++](./not_C++.md)
 
 # Worklog
 

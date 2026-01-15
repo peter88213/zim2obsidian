@@ -4,7 +4,11 @@ blabla
 
 [[This is a sub page.md|Next page]]
 
+[[not_subpage.md|Not next page]]
+
 [[C++ is some programming language.md|C++]]
+
+[[not_C++.md|Not C++]]
 
 # Worklog
 
