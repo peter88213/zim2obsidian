@@ -85,6 +85,9 @@ v0.15.2 - No longer converting links to wikilinks if the path is an URL.
 v0.16.0 - New command line option: Do not convert Zim tags to Obsidian tags.
           Refactored the code for better maintainability.
           Removed the obsolete global configuration constants.         
+v0.17.0 Changes made by kimsin98 (https://github.com/kimsin98)
+        - Change regex to match note names more strictly #28 
+        - New parameter to exclude directories from the rename step #29 
 """
 
 import glob
