@@ -9,6 +9,7 @@ blabla
 [[C++ is some programming language.md|C++]]
 
 [[not_C++.md|Not C++]]
+[[Journal/2026/01/01.md|New year]]
 
 # Worklog
 

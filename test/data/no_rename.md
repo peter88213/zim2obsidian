@@ -4,11 +4,8 @@ blabla
 
 [Next page](This%20is%20a%20sub%20page.md)
 
-[Not next page](./not_subpage.md)
-
 [C++](C%2B%2B%20is%20some%20programming%20language.md)
 
-[Not C++](./not_C++.md)
 [New year](./Journal/2026/01/01.md)
 
 # Worklog
@@ -49,15 +46,17 @@ blabla ==highlighted== blabla ==highlighted==.
 [Studios](./Game developers/Studios.md) (including Game Dev Map)
 - [ ] [Game developers:Studios]()
 
-This is a line with `@inline raw code ▷ 1` and `@inline raw code 2`
-`@inline raw code 3` begins the line.
-#This line also has `@inline raw code 4` for testing.
+This is a line with `#inline raw code - [>] 1` and `#inline raw code 2`
+`#inline raw code 3` begins the line.
+#This line also has `#inline raw code 4` for testing.
 
 ```
-   @This is raw code fenced with backticks.
+   #This is raw code fenced with backticks.
 ```
 
-	#This is raw code according to the Zim Markdown export specifications.
+```
+	@This is raw code according to the Zim Markdown export specifications.
+```
 #Tag7
 
 ### Third level heading

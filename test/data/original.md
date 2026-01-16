@@ -11,6 +11,7 @@ blabla
 [C++](./C++.md)
 
 [Not C++](./not_C++.md)
+[New year](./Journal/2026/01/01.md)
 
 # Worklog
 

@@ -11,13 +11,14 @@ Suggested workflow:
 3. Copy this Python script into the export root directory. 
 4. Start zim2obsidian.py by double clicking on it or from the console. 
 
-usage: zim2obsidian.py [-h] [-b] [-w] [-@]
+usage: zim2obsidian.py [-h] [-b] [-w] [-@] [--no_rename dir1 dir2 ...]
 
 options:
   -h, --help       show a help message and exit
   -b, --backticks  verbatim blocks and inline code are marked with backticks
   -w, --wikilinks  Convert Markdown links to wikilinks
   -@, --preserve_at  Do not convert Zim tags to Obsidian tags
+  --no_rename      Skip rename for specified directories (e.g. Journal)
 
 Requires Python 3.9+
 Copyright (c) 2025 Peter Triesberger
@@ -89,14 +90,18 @@ v0.16.0 - New command line option: Do not convert Zim tags to Obsidian tags.
 import glob
 import os
 import re
+from pathlib import PurePath
 from urllib.request import pathname2url
 from urllib.parse import unquote, urlparse
 
 
-def rename_pages():
+def rename_pages(no_rename=None):
     """Rename pages according to the names given by the top first level heading.
     
     Note: Make sure to call this procedure before the page's first lines are removed.
+
+    Optional arguments:
+        no_rename: list -- Directories to skip
     """
     FORBIDDEN_CHARACTERS = ('\\', '/', ':', '*', '?', '"', '<', '>', '|')
     # set of data that filenames cannot contain
@@ -109,6 +114,13 @@ def rename_pages():
     # Loop through all files with the ".md" extension, including subdirectories.
     for noteFile in glob.iglob('**/*.md', recursive=True):
         noteDir, oldName = os.path.split(noteFile)
+
+        # Skip rename for no_rename directories
+        if noteDir and no_rename:
+            if any(PurePath(noteDir).is_relative_to(excluded)
+                   for excluded in no_rename):
+                continue
+
         if noteDir:
             noteDir = f'{noteDir}/'
         with open(noteFile, 'r', encoding='utf-8') as f:
@@ -471,14 +483,14 @@ def reformat_links():
             f.writelines(newlines)
 
 
-def main(backticks=False, wikilinks=False, preserveAt=False):
+def main(backticks=False, wikilinks=False, preserveAt=False, no_rename=None):
     """Run the converter
     
     Optional arguments:
         backticks: bool -- If True, verbatim blocks and inline code are marked with backticks.
     """
     print(f'*** Convert Zim export in "{os.getcwd()}" to Obsidian ***\n')
-    rename_pages()
+    rename_pages(no_rename)
     remove_first_line()
     change_md_style(backticks, preserveAt)
     if wikilinks:
@@ -507,5 +519,11 @@ if __name__ == '__main__':
         action="store_true",
         help='Do not convert Zim tags to Obsidian tags'
         )
+    parser.add_argument(
+        '--no_rename',
+        nargs='*',
+        default=None,
+        help='Skip rename for specified directories (e.g. Journal)'
+        )
     args = parser.parse_args()
-    main(args.backticks, args.wikilinks, args.preserve_at)
+    main(args.backticks, args.wikilinks, args.preserve_at, args.no_rename)
