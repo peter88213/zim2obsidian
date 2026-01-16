@@ -154,7 +154,7 @@ def rename_pages(no_rename=None):
             page = f.read()
         for noteName in noteNames:
             escapedNoteName = re.escape(noteName)
-            links = re.findall(fr'\[.+(\]\(.*{escapedNoteName}\))', page)
+            links = re.findall(fr'\[.+?(\]\([^)]*[/\(]{escapedNoteName}\))', page)
             for oldLink in links:
                 newLink = oldLink.replace(noteName, pathname2url(noteNames[noteName])).replace('](./', '](')
                 print(f'- Replacing {oldLink} with {newLink} ...')

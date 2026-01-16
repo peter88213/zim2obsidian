@@ -6,8 +6,11 @@ blabla
 
 [Next page](./subpage.md)
 
+[Not next page](./not_subpage.md)
+
 [C++](./C++.md)
 
+[Not C++](./not_C++.md)
 [New year](./Journal/2026/01/01.md)
 
 # Worklog
