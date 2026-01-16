@@ -8,7 +8,7 @@ Published under the MIT License (https://opensource.org/licenses/mit-license.php
 import unittest
 import os
 import glob
-from shutil import copyfile
+from shutil import copyfile, copytree, rmtree
 import zim2obsidian
 
 TEST_DIR = '../test/workdir'
@@ -16,6 +16,7 @@ TEST_INPUT = 'Junk.md'
 TEST_OUTPUT = 'Home.md'
 SUBPAGE1 = 'subpage.md'
 SUBPAGE2 = 'C++.md'
+SKIPDIR = 'Journal'
 ORIGINAL_FILE = '../data/original.md'
 REFERENCE_FILE = '../data/processed.md'
 WIKILINKS_FILE = '../data/wikilinks.md'
@@ -98,6 +99,25 @@ class NoTagsLinksTest(unittest.TestCase):
     def tearDown(self):
         for testFile in glob.iglob('**/*.md', recursive=True):
             os.remove(testFile)
+
+
+class NoRenameTest(unittest.TestCase):
+    """Test case: convert a single page exported by zim, but skip rename for a directory."""
+
+    def setUp(self):
+        copyfile(ORIGINAL_FILE, TEST_INPUT)
+        copyfile(f'../data/{SUBPAGE1}', f'../workdir/{SUBPAGE1}')
+        copyfile(f'../data/{SUBPAGE2}', f'../workdir/{SUBPAGE2}')
+        copytree(f'../data/{SKIPDIR}', f'../workdir/{SKIPDIR}')
+
+    def test_zim2obsidian(self):
+        zim2obsidian.main(no_rename=[SKIPDIR])
+        self.assertEqual(read_file(TEST_OUTPUT), read_file(REFERENCE_FILE))
+
+    def tearDown(self):
+        for testFile in glob.iglob('**/*.md', recursive=True):
+            os.remove(testFile)
+        rmtree(f'../workdir/{SKIPDIR}', ignore_errors=True)
 
 
 if __name__ == "__main__":

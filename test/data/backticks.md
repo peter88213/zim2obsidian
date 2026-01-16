@@ -6,6 +6,8 @@ blabla
 
 [C++](C%2B%2B%20is%20some%20programming%20language.md)
 
+[New year](./Journal/2026/01/01.md)
+
 # Worklog
 
 \[Game design] Balanced skill powers

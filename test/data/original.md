@@ -8,6 +8,8 @@ blabla
 
 [C++](./C++.md)
 
+[New year](./Journal/2026/01/01.md)
+
 # Worklog
 
 [Game design] Balanced skill powers
