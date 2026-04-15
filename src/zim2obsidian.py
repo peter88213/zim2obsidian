@@ -88,6 +88,7 @@ v0.16.0 - New command line option: Do not convert Zim tags to Obsidian tags.
 v0.17.0 Changes made by kimsin98 (https://github.com/kimsin98)
         - Change regex to match note names more strictly #28 
         - New parameter to exclude directories from the rename step #29 
+v0.17.1 - Updated the command line help due to changes made in version 0.15.2.
 """
 
 import glob
@@ -515,7 +516,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-w', '--wikilinks',
         action="store_true",
-        help='Convert Markdown links to wikilinks'
+        help='Convert internal Markdown links to wikilinks'
         )
     parser.add_argument(
         '-@', '--preserve_at',
